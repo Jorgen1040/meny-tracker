@@ -19,7 +19,7 @@ export default function Produkt({ produkt, changes }) {
                 <pre className="border-8 border-red-400" key={index}>
                     <strong>{new Date(value.timestamp).toLocaleString("no-NB", { timeZone: "Europe/Oslo" })}</strong>
                     <br/>
-                    <BrowserReactJsonView src={value} collapsed={2} theme={"monokai"} name={false} />
+                    <BrowserReactJsonView src={value} collapsed={2} theme={"monokai"} name={false} collapseStringsAfterLength={100} />
                 </pre>
             )
         }
@@ -31,7 +31,7 @@ export default function Produkt({ produkt, changes }) {
             <h1 className="text-2xl">Produkt navn: {produkt ? produkt.title : "Ingen produkt funnet" }</h1>
             <div>
                 <pre>
-                    <BrowserReactJsonView src={produkt} collapsed={2} theme={"monokai"} name={false}/>
+                    <BrowserReactJsonView src={produkt} collapsed={2} theme={"monokai"} name={false} collapseStringsAfterLength={100} />
                 </pre>
             </div>
         { changes && (

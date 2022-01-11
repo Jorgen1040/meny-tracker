@@ -1,8 +1,14 @@
-import { useRouter } from 'next/router'
-import clientPromise from '../../lib/mongodb'
+import { useRouter } from 'next/router';
+import clientPromise from '../../lib/mongodb';
+import dynamic from 'next/dynamic';
 
+// react-json-view only works without SSR
+const BrowserReactJsonView = dynamic(() => import('react-json-view'), {
+    ssr: false,
+});
 
 export default function Produkt({ produkt, changes }) {
+    const json_settings = ""
     const router = useRouter();
     const { id } = router.query;
     let change_items = [];
@@ -13,7 +19,7 @@ export default function Produkt({ produkt, changes }) {
                 <pre className="border-8 border-red-400" key={index}>
                     <strong>{new Date(value.timestamp).toLocaleString("no-NB", { timeZone: "Europe/Oslo" })}</strong>
                     <br/>
-                    {JSON.stringify(value, null, 2)}
+                    <BrowserReactJsonView src={value} collapsed={2} theme={"monokai"} name={false} />
                 </pre>
             )
         }
@@ -24,7 +30,9 @@ export default function Produkt({ produkt, changes }) {
             <h1 className="text-2xl">Søker på produkt med EAN: {id}</h1>
             <h1 className="text-2xl">Produkt navn: {produkt ? produkt.title : "Ingen produkt funnet" }</h1>
             <div>
-                <pre>{JSON.stringify(produkt, null, 2)}</pre>
+                <pre>
+                    <BrowserReactJsonView src={produkt} collapsed={2} theme={"monokai"} name={false}/>
+                </pre>
             </div>
         { changes && (
             <div>

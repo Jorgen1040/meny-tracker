@@ -1,6 +1,16 @@
 import { useRouter } from 'next/router';
 import clientPromise from '../../lib/mongodb';
 import dynamic from 'next/dynamic';
+import pino from 'pino';
+
+const logger = pino({
+    transport: {
+        target: "pino-pretty",
+        options: {
+            colorize: true,
+        }
+    }
+});
 
 // react-json-view only works without SSR
 const BrowserReactJsonView = dynamic(() => import('react-json-view'), {
@@ -45,6 +55,7 @@ export default function Produkt({ produkt, changes }) {
 }
 
 export async function getServerSideProps({ params }) {
+    logger.info("Getting produkt with EAN: " + params.id);
     const client = await clientPromise;
     // Get the first product with the provided EAN (this will be used to store all information except price in the future)
     const produkt = await client.db("meny")

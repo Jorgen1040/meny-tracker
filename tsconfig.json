@@ -6,9 +6,18 @@
       "dom.iterable",
       "esnext"
     ],
+    "baseUrl": ".",
+    "paths": {
+      "@components/*": [
+        "components/*"
+      ],
+      "@lib/*": [
+        "lib/*"
+      ],
+    },
     "allowJs": true,
     "skipLibCheck": true,
-    "strict": false,
+    "strict": true,
     "forceConsistentCasingInFileNames": true,
     "noEmit": true,
     "incremental": true,
@@ -21,6 +30,7 @@
   },
   "include": [
     "next-env.d.ts",
+    "@types/*.d.ts",
     "**/*.ts",
     "**/*.tsx"
   ],

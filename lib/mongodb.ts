@@ -1,7 +1,13 @@
-import { MongoClient } from 'mongodb'
+import { MongoClient, ServerApiVersion } from 'mongodb'
+
+// type GlobalMongoClientPromise = typeof globalThis & { ["_mongoClientPromise"]: Promise<MongoClient>};
 
 const uri = process.env.MONGODB_URI;
-const options = {};
+const options = {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+    serverApi: ServerApiVersion.v1
+};
 
 let client: MongoClient;
 let clientPromise: Promise<MongoClient>;
@@ -12,13 +18,16 @@ if (!process.env.MONGODB_URI) {
 
 if (process.env.NODE_ENV === "development") {
     // If in develompent environment, add database connection to globals to be accessible after hot reloads
-    if (!global._mongoClientPromise) {
-        client = new MongoClient(uri, options);
-        global._mongoClientPromise = client.connect();
+    let mongoGlobal = global as typeof globalThis & { 
+        _mongoClientPromise: Promise<MongoClient>
+    };
+    if (!mongoGlobal._mongoClientPromise) {
+        client = new MongoClient(uri!, options);
+        mongoGlobal._mongoClientPromise = client.connect();
     }
-    clientPromise = global._mongoClientPromise;
+    clientPromise = mongoGlobal._mongoClientPromise;
 } else {
-    client = new MongoClient(uri, options);
+    client = new MongoClient(uri!, options);
     clientPromise = client.connect();
 }
 

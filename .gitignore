@@ -34,3 +34,4 @@ yarn-error.log*
 .vercel
 
 docker-compose.yml
+.vscode/

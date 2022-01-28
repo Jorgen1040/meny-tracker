@@ -1,12 +1,12 @@
 import Link from 'next/link';
 import { MenuIcon, SearchIcon,UserCircleIcon } from '@heroicons/react/solid';
-import { FormEvent, useState } from 'react';
+import React, { FormEvent, useState } from 'react';
 
 // Top navbar
 export default function Navbar() {
     const [textInput, setTextInput] = useState('');
 
-    const handleChange = (event) => {
+    const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setTextInput(event.target.value)
     }
     

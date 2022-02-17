@@ -2,11 +2,13 @@ import { useRouter } from 'next/router';
 import clientPromise from '@lib/mongodb';
 import dynamic from 'next/dynamic';
 import pino from 'pino';
+// TODO: Swap recharts with own implementation (3.js?)
 import { CartesianGrid, LineChart, XAxis, YAxis, Area, ResponsiveContainer, AreaChart, Tooltip } from 'recharts';
 // TODO: Use alternative for moment
 import moment from 'moment';
 import Loader from '@components/Loader';
 import ProductView from '@components/products/ProductView';
+import ProductTile from '@components/products/ProductTile';
 
 
 const logger = pino({
@@ -14,24 +16,19 @@ const logger = pino({
         target: "pino-pretty",
         options: {
             colorize: true,
+            level: "debug",
         }
     }
 });
 
-// react-json-view only works without SSR
-const BrowserReactJsonView = dynamic(() => import('react-json-view'), {
-    ssr: false,
-});
-
 interface Change {
-    timestamp: Date;
+    timestamp: number;
     pricePerUnit: number;
 }
 
-export default function Produkt({ product, priceChanges }: { product: any, priceChanges: Change[] }) {
+export default function Produkt({ product, priceChanges, associated }: { product: any, priceChanges: Change[], associated: any }) {
     const router = useRouter();
     const { id } = router.query;
-    let change_items: JSX.Element[] = [];
     
     // Handle loading page
     if (router.isFallback) {
@@ -44,68 +41,78 @@ export default function Produkt({ product, priceChanges }: { product: any, price
 
     if (!product) {
         return (
-            <div className="grid place-items-center h-screen">
+            <div className="grid h-screen">
                 <div>
-                    <h1 className="text-center">Produktet finnes ikke</h1>
-                    <h1 className="text-center">Leter du etter disse?</h1>
+                    <h1 className="text-center text-5xl text-red-400 my-32">Produktet finnes ikke</h1>
+                    {/* <h1 className="text-center">Leter du etter disse?</h1> */}
                     {/* TODO: Vis liste med produkter via Atlas Search med query */}
                 </div>
             </div>
         )
     }
 
-    // { priceChanges && 
-    //     priceChanges.map((change: Change, index) => {
-    //         change_items.push(
-    //             <pre className="border-8 border-red-400" key={index}>
-    //                 <strong>{new Date(change.timestamp).toLocaleString("no-NB", { timeZone: "Europe/Oslo" })}</strong>
-    //                 <br/>
-                    
-    //                 <BrowserReactJsonView src={change} collapsed={2} theme={"monokai"} name={false} collapseStringsAfterLength={100} />
-    //             </pre>
-    //         );
-    //     });
-    // }
-    console.log(product);
-    console.log(priceChanges);
-
+    // console.log(product);
+    // console.log(priceChanges);
+    // Add missing values to priceChanges
+    // Compare timestamp and if it's not changed in a day, add same price inbetween
+    // priceChanges.forEach((change, index, priceChanges) => {
+    //     const nextChange = priceChanges[index + 1];
+    //     if (!nextChange) {
+    //         return;
+    //     }
+    //     const diff = nextChange.timestamp - change.timestamp;
+    //     if (diff > 86400000) {
+    //         const newChange = {
+    //             timestamp: change.timestamp + 86400000,
+    //             pricePerUnit: change.pricePerUnit
+    //         }
+    //         priceChanges.splice(index + 1, 0, newChange);
+    //         console.log(priceChanges)
+    //     }
+    // });
+    // associated.map((product: any, index: number) => (
+    //     // <ProductTile key={index} product={product} />
+    //     console.log(`${index} ${product.title} ${product.pricePerUnit.toFixed(2)} ${product.comparePricePerUnit.toFixed(2)}`)
+    // ))
     // TODO: Make the graph look nicer (don't use stepAfter, fill in the gaps instead)
     return (
         <>
-            { priceChanges &&
-                <ResponsiveContainer width="100%" height={300} className="py-2">
-                    <AreaChart
-                    data={priceChanges.reverse()}
-                    margin={{
-                        top: 5,
-                        right: 30,
-                        left: 20,
-                        bottom: 5
-                    }}
-                    >
-                        <CartesianGrid strokeDasharray="3 3" />
-                        <XAxis dataKey="timestamp" tickFormatter={timeStr => moment(timeStr).format('DD.MM.YY')} />
-                        <YAxis dataKey="pricePerUnit" />
-                        <Tooltip />
-                        <Area type="stepAfter" connectNulls={true} dataKey="pricePerUnit" stroke="#8884d8" name="Pris" />
-                    </AreaChart>
-                </ResponsiveContainer>
-            }
-                <h1 className="text-2xl">Søker på produkt med EAN: {id}</h1>
-                <h1 className="text-2xl">Produkt navn: {product.title}</h1>
+            <div className="container mx-auto w-3/4">
                 <ProductView product={product} />
-
-                {/* <div>
-                    <pre>
-                        <BrowserReactJsonView src={product} collapsed={2} theme={"monokai"} name={false} collapseStringsAfterLength={100} />
-                    </pre>
-                </div> */}
-            {/* { priceChanges && (
                 <div>
-                    <h1 className="text-2xl">{change_items.length} Totale Endringer (nyest til eldst):</h1>
-                    {change_items}
+                    <h1 className="text-2xl my-3">Prishistorikk</h1>
+                    <ResponsiveContainer width="100%" height={300} >
+                        <AreaChart
+                        data={priceChanges.reverse()}
+                        margin={{
+                            top: 5,
+                            right: 30,
+                            left: 20,
+                            bottom: 5
+                        }}
+                        >
+                            <CartesianGrid strokeDasharray="3 3" />
+                            <XAxis dataKey="timestamp" tickFormatter={timeStr => moment(timeStr).format('DD.MM.YY')} />
+                            <YAxis dataKey="pricePerUnit" />
+                            <Tooltip />
+                            <Area type="stepAfter" connectNulls={true} dataKey="pricePerUnit" stroke="#8884d8" name="Pris" />
+                        </AreaChart>
+                    </ResponsiveContainer>
                 </div>
-            )} */}
+                <div>
+                    <h1 className="text-2xl my-3">Lignende produkter</h1>
+                    <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-5 gap-5">
+                        {
+                            //console.log(product.associated.products)
+                    
+                            associated.map((product: any, index: number) => (
+                                <ProductTile key={index} product={product} />
+                            ))
+                            
+                        }
+                    </div>
+                </div>
+            </div>
         </>
     );
 }
@@ -127,7 +134,7 @@ export async function getStaticProps({ params }: Params) {
                                     {"ean": id},
                                     {"projection": {"_id": 0}}
                                 );
-
+    
     // If no product was found, return nothing
     if (!product) {
         return {
@@ -135,28 +142,49 @@ export async function getStaticProps({ params }: Params) {
         }
     }
 
+    // Get all associated product documents
+    const associated: any[] = [];
+    product.associated.products.forEach(async (id: string, index: number) => {
+        const product = await client.db("meny")
+                                    .collection("products")
+                                    .findOne(
+                                        {"ean": id},
+                                        {"projection": {"_id": 0}}
+                                    );
+        if (!product) return;
+        //console.log(product.title)
+        associated.push(product);
+    });
+
+    
+
     // Get all the price changes for the product
     const prices_cursor = client.db("meny")
                                 .collection("prices")
                                 .find(
+                                    {"metadata.ean": id},
                                     {
-                                        "metadata.ean": id,
-                                    },
-                                    {"projection": {"_id": 0}, "sort": {"timestamp": -1}}
+                                        "projection": {"_id": 0},
+                                        "sort": {"timestamp": -1}
+                                    }
                                 );
 
     // Generate priceChanges array
-    const priceChanges: Change[] = await prices_cursor.map((item) => {
+    let priceChanges: Change[] = await prices_cursor.map((item) => {
         return {
             timestamp: item.timestamp.getTime(),
             pricePerUnit: item.pricePerUnit
         };
     }).toArray();
 
+    // Add missing values to priceChanges between days
+    
+
     return {
         props: { 
             product,
-            priceChanges
+            priceChanges,
+            associated: associated.slice(0, 10)
         },
         // Revalidate after 10 minutes
         revalidate: 600

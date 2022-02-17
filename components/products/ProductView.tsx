@@ -23,7 +23,7 @@ export default function ProductView({ product }: { product: any }) {
                 <h1 className="text-3xl">{name}</h1>
                 <p>{product.subtitle}</p>
                 <p className="mb-12">{product.description}</p>
-                { product.pricePerUnitOriginal &&
+                { product.isOffer &&
                     <p className="text-gray-400 text"><s>kr {product.pricePerUnitOriginal.toFixed(2)}</s></p>
                 }
                 <p className="text-2xl">kr {price}</p>

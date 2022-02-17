@@ -6,7 +6,6 @@ export default function ProductTile({ product }: { product: any }) {
     return (
         <div className="rounded-lg shadow-xl  flex flex-col">
             <div className="p-4 flex justify-center flex-grow">
-                {/* TODO: Fix image stretch */}
                 <Link href={`${product.ean}`}>
                     <a>
                         <Image 

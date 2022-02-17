@@ -215,8 +215,7 @@ export async function getStaticPaths() {
     //     paths.push({params: {id: item.ean}});
     // }
     // logger.info("finished getting paths")
-    // const paths = [{ params: { id: "2000467100006" }}]
-    const paths = []
+    const paths = [{ params: { id: "2000467100006" }}]
 
     return {
         paths,

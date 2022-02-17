@@ -75,6 +75,7 @@ export default function Produkt({ product, priceChanges, associated }: { product
     //     console.log(`${index} ${product.title} ${product.pricePerUnit.toFixed(2)} ${product.comparePricePerUnit.toFixed(2)}`)
     // ))
     // TODO: Make the graph look nicer (don't use stepAfter, fill in the gaps instead)
+    logger.info("Returning the actual page now")
     return (
         <>
             <div className="container mx-auto w-3/4">
@@ -177,12 +178,15 @@ export async function getStaticProps({ params }: Params) {
     logger.info(`Getting prices for product with EAN ${id} took ${endTime - startTime}ms`);
 
     // Generate priceChanges array
+    const changesStart = new Date().getTime();
     let priceChanges: Change[] = await prices_cursor.map((item) => {
         return {
             timestamp: item.timestamp.getTime(),
             pricePerUnit: item.pricePerUnit
         };
     }).toArray();
+    const changesEnd = new Date().getTime();
+    logger.info(`Generating price changes took ${changesEnd - changesStart}ms`);
 
     // Add missing values to priceChanges between days
     
@@ -211,7 +215,8 @@ export async function getStaticPaths() {
     //     paths.push({params: {id: item.ean}});
     // }
     // logger.info("finished getting paths")
-    const paths = [{ params: { id: "2000467100006" }}]
+    // const paths = [{ params: { id: "2000467100006" }}]
+    const paths = []
 
     return {
         paths,

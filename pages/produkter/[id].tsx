@@ -143,6 +143,7 @@ export async function getStaticProps({ params }: Params) {
     }
 
     // Get all associated product documents
+    const startTimeAssociated = new Date().getTime();
     const associated: any[] = [];
     product.associated.products.forEach(async (id: string, index: number) => {
         const product = await client.db("meny")
@@ -152,13 +153,17 @@ export async function getStaticProps({ params }: Params) {
                                         {"projection": {"_id": 0}}
                                     );
         if (!product) return;
-        //console.log(product.title)
+        if (index > 10) return;
+        console.log(product.title)
         associated.push(product);
     });
+    const endTimeAssociated = new Date().getTime();
+    logger.info(`Associated products took ${endTimeAssociated - startTimeAssociated}ms`);
 
     
 
     // Get all the price changes for the product
+    const startTime = new Date().getTime();
     const prices_cursor = client.db("meny")
                                 .collection("prices")
                                 .find(
@@ -168,6 +173,8 @@ export async function getStaticProps({ params }: Params) {
                                         "sort": {"timestamp": -1}
                                     }
                                 );
+    const endTime = new Date().getTime();
+    logger.info(`Getting prices for product with EAN ${id} took ${endTime - startTime}ms`);
 
     // Generate priceChanges array
     let priceChanges: Change[] = await prices_cursor.map((item) => {
@@ -179,7 +186,7 @@ export async function getStaticProps({ params }: Params) {
 
     // Add missing values to priceChanges between days
     
-
+    logger.info("returning")
     return {
         props: { 
             product,

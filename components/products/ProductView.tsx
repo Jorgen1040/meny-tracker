@@ -4,7 +4,6 @@ import Image from "next/image";
 
 
 export default function ProductView({ product }: { product: any }) {
-    console.log(product);
     // Get image, name, price, and description
     const name = product.title
     const image = "https://res.cloudinary.com/norgesgruppen/image/upload/f_auto,q_50,w_320,h_320,c_pad/" + product.imageName

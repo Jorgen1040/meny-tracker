@@ -169,11 +169,9 @@ export async function getStaticProps({ params }: Params) {
                                 .collection("prices")
                                 .find(
                                     {"metadata.ean": id},
-                                    {
-                                        "projection": {"_id": 0},
-                                        "sort": {"timestamp": -1}
-                                    }
-                                );
+                                    {"projection": {"_id": 0}}
+                                )
+                                .sort({"timestamp": -1});
     const endTime = new Date().getTime();
     logger.info(`Getting prices for product with EAN ${id} took ${endTime - startTime}ms`);
 

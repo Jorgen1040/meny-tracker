@@ -176,6 +176,7 @@ export async function getStaticProps({ params }: Params) {
                                 .sort({"timestamp": -1});
 
     // Generate priceChanges array
+    // TODO: Optimize this
     const changesStart = new Date().getTime();
     let priceChanges: Change[] = await prices_cursor.map((item) => {
         return {
@@ -193,7 +194,7 @@ export async function getStaticProps({ params }: Params) {
         props: { 
             product,
             priceChanges,
-            associated: associated
+            associated
         },
         // Revalidate after 10 minutes
         revalidate: 600

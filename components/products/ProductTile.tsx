@@ -6,13 +6,13 @@ export default function ProductTile({ product }: { product: any }) {
     return (
         <div className="rounded-lg shadow-xl  flex flex-col">
             <div className="p-4 flex justify-center flex-grow">
-                <Link href={`${product.ean}`}>
+                <Link href={`${product.ean}`} prefetch={false}>
                     <a>
                         <Image 
                             src={"https://res.cloudinary.com/norgesgruppen/image/upload/f_auto,q_50,w_320,h_320,c_pad/" + product.imageName}
                             alt={product.title}
                             height={120}
-                            width={120} 
+                            width={120}
                         />
                     </a>
                 </Link>

@@ -9,6 +9,7 @@ import moment from 'moment';
 import Loader from '@components/Loader';
 import ProductView from '@components/products/ProductView';
 import ProductTile from '@components/products/ProductTile';
+import Head from 'next/head';
 
 
 const logger = pino({
@@ -78,6 +79,9 @@ export default function Produkt({ product, priceChanges, associated }: { product
     logger.info("Returning the actual page now")
     return (
         <>
+            <Head>
+                <title>Priser for {product.title} - Meny Tracker</title>
+            </Head>
             <div className="container mx-auto w-3/4">
                 <ProductView product={product} />
                 <div>

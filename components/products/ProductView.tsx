@@ -24,6 +24,7 @@ export default function ProductView({ product }: { product: any }) {
                 <p>{product.subtitle}</p>
                 <p className="mb-12">{product.description}</p>
                 { product.isOffer &&
+                    // TODO: Show sale percentage, and add an icon to the product image
                     <p className="text-gray-400 text"><s>kr {product.pricePerUnitOriginal.toFixed(2)}</s></p>
                 }
                 <p className="text-2xl">kr {price}</p>

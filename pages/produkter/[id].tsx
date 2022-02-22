@@ -52,31 +52,9 @@ export default function Produkt({ product, priceChanges, associated }: { product
         )
     }
 
-    // console.log(product);
-    // console.log(priceChanges);
-    // Add missing values to priceChanges
-    // Compare timestamp and if it's not changed in a day, add same price inbetween
-    // priceChanges.forEach((change, index, priceChanges) => {
-    //     const nextChange = priceChanges[index + 1];
-    //     if (!nextChange) {
-    //         return;
-    //     }
-    //     const diff = nextChange.timestamp - change.timestamp;
-    //     if (diff > 86400000) {
-    //         const newChange = {
-    //             timestamp: change.timestamp + 86400000,
-    //             pricePerUnit: change.pricePerUnit
-    //         }
-    //         priceChanges.splice(index + 1, 0, newChange);
-    //         console.log(priceChanges)
-    //     }
-    // });
-    // associated.map((product: any, index: number) => (
-    //     // <ProductTile key={index} product={product} />
-    //     console.log(`${index} ${product.title} ${product.pricePerUnit.toFixed(2)} ${product.comparePricePerUnit.toFixed(2)}`)
-    // ))
+    console.log(product);
+    console.log(priceChanges);
     // TODO: Make the graph look nicer (don't use stepAfter, fill in the gaps instead)
-    logger.info("Returning the actual page now")
     return (
         <>
             <Head>
@@ -100,7 +78,7 @@ export default function Produkt({ product, priceChanges, associated }: { product
                             <XAxis dataKey="timestamp" tickFormatter={timeStr => moment(timeStr).format('DD.MM.YY')} />
                             <YAxis dataKey="pricePerUnit" />
                             <Tooltip />
-                            <Area type="stepAfter" connectNulls={true} dataKey="pricePerUnit" stroke="#8884d8" name="Pris" />
+                            <Area type="linear" dataKey="pricePerUnit" stroke="#8884d8" name="Pris" />
                         </AreaChart>
                     </ResponsiveContainer>
                 </div>
@@ -148,7 +126,6 @@ export async function getStaticProps({ params }: Params) {
     }
 
     // Get all associated product documents
-    const startTimeAssociated = new Date().getTime();
     const associated: any[] = [];
     product.associated.products.slice(0, 10).forEach(async (id: string, index: number) => {
         const product = await client.db("meny")
@@ -158,13 +135,8 @@ export async function getStaticProps({ params }: Params) {
                                         {"projection": {"_id": 0}}
                                     );
         if (!product) return;
-        console.log(product.title)
         associated.push(product);
     });
-    const endTimeAssociated = new Date().getTime();
-    logger.info(`Associated products took ${endTimeAssociated - startTimeAssociated}ms`);
-
-    
 
     // Get all the price changes for the product
     const prices_cursor = client.db("meny")
@@ -177,19 +149,15 @@ export async function getStaticProps({ params }: Params) {
 
     // Generate priceChanges array
     // TODO: Optimize this
-    const changesStart = new Date().getTime();
     let priceChanges: Change[] = await prices_cursor.map((item) => {
         return {
             timestamp: item.timestamp.getTime(),
             pricePerUnit: item.pricePerUnit
         };
     }).toArray();
-    const changesEnd = new Date().getTime();
-    logger.info(`Generating price changes took ${changesEnd - changesStart}ms`);
 
     // Add missing values to priceChanges between days
     
-    logger.info("returning")
     return {
         props: { 
             product,

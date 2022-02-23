@@ -25,8 +25,11 @@ export default function ProductTile({ product }: { product: any }) {
                 </Link>
                 <p className="text-sm">{product.subtitle}</p> 
             </div>
-            <div className="p-2">
+            <div className="relative p-2">
                 {/* TODO: Add sale prices (and a little icon on the image to indicate sales) */}
+                { product.isOffer &&
+                    <p className="absolute -top-2 text-gray-400"><s>kr {product.pricePerUnitOriginal.toFixed(2)}</s></p>
+                }
                 <p className="text-xl">kr {product.pricePerUnit.toFixed(2)}</p>
                 { product.comparePricePerUnit ?
                     <p className="text-sm text-gray-500">kr {product.comparePricePerUnit.toFixed(2)}/{product.compareUnit}</p>

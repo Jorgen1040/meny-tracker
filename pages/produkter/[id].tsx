@@ -52,9 +52,57 @@ export default function Produkt({ product, priceChanges, associated }: { product
         )
     }
 
-    console.log(product);
-    console.log(priceChanges);
-    // TODO: Make the graph look nicer (don't use stepAfter, fill in the gaps instead)
+    // console.log(product);
+    // console.log(priceChanges);
+    // console.log(associated);
+ 
+    // Iterate over priceChanges and add missing values
+    // If there is a change loop over the entire array again
+    for (let i = 0; i < priceChanges.length; i++) {
+        const change = priceChanges[i];
+        const nextChange = priceChanges[i + 1];
+        if (nextChange && nextChange.timestamp - change.timestamp > 86400000) {
+            // logger.info({
+            //     nextChange,
+            //     date: moment(nextChange.timestamp).toDate(),
+            //     change,
+            //     diff: nextChange.timestamp - change.timestamp
+            // });
+            priceChanges.splice(i + 1, 0, {
+                timestamp: change.timestamp + 86400000,
+                pricePerUnit: change.pricePerUnit
+            });
+        }
+        // Fill in data up to current date
+        if (!nextChange && Date.now() - change.timestamp > 86400000) {
+            priceChanges.splice(i + 1, 0, {
+                timestamp: change.timestamp + 86400000,
+                pricePerUnit: change.pricePerUnit
+            });
+        }
+    }
+    // Dedupe
+    priceChanges.forEach((change, index) => {
+        const prevChange = priceChanges[index - 1];
+        const nextChange = priceChanges[index + 1];
+        if (nextChange && moment(change.timestamp).format('DD.MM.YY') === moment(nextChange.timestamp).format('DD.MM.YY')) {
+            // Remove the price that didn't change
+            if (prevChange.pricePerUnit === change.pricePerUnit && nextChange.pricePerUnit !== change.pricePerUnit) {
+                priceChanges.splice(index, 1);
+            }
+        }
+    });
+    // Convert to human readable timestamps
+    const humanDates: any[] = [];
+    priceChanges.forEach(change => {
+        humanDates.push({
+            timestamp: change.timestamp,
+            pricePerUnit: change.pricePerUnit,
+            date: moment(change.timestamp).toDate()
+        });
+    })
+    // console.log(humanDates);
+    // TODO: Show important times in graph (highlight areas with sales)
     return (
         <>
             <Head>
@@ -66,7 +114,7 @@ export default function Produkt({ product, priceChanges, associated }: { product
                     <h1 className="text-2xl my-3">Prishistorikk</h1>
                     <ResponsiveContainer width="100%" height={300} >
                         <AreaChart
-                        data={priceChanges.reverse()}
+                        data={priceChanges}
                         margin={{
                             top: 5,
                             right: 30,
@@ -77,8 +125,8 @@ export default function Produkt({ product, priceChanges, associated }: { product
                             <CartesianGrid strokeDasharray="3 3" />
                             <XAxis dataKey="timestamp" tickFormatter={timeStr => moment(timeStr).format('DD.MM.YY')} />
                             <YAxis dataKey="pricePerUnit" />
-                            <Tooltip />
-                            <Area type="linear" dataKey="pricePerUnit" stroke="#8884d8" name="Pris" />
+                            <Tooltip separator=': ' labelFormatter={timeStr => moment(timeStr).format('DD.MM.YY')} />
+                            <Area type="linear" dataKey="pricePerUnit" stroke="#8884d8" name="Pris" unit=" kr" />
                         </AreaChart>
                     </ResponsiveContainer>
                 </div>
@@ -86,8 +134,6 @@ export default function Produkt({ product, priceChanges, associated }: { product
                     <h1 className="text-2xl my-3">Lignende produkter</h1>
                     <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-5 gap-5">
                         {
-                            //console.log(product.associated.products)
-                    
                             associated.map((product: any, index: number) => (
                                 <ProductTile key={index} product={product} />
                             ))
@@ -126,6 +172,7 @@ export async function getStaticProps({ params }: Params) {
     }
 
     // Get all associated product documents
+    // TODO: Find out why this function gets a random amount of products
     const associated: any[] = [];
     product.associated.products.slice(0, 10).forEach(async (id: string, index: number) => {
         const product = await client.db("meny")
@@ -145,7 +192,7 @@ export async function getStaticProps({ params }: Params) {
                                     {"metadata.ean": id},
                                     {"projection": {"_id": 0}}
                                 )
-                                .sort({"timestamp": -1});
+                                .sort({"timestamp": 1});
 
     // Generate priceChanges array
     // TODO: Optimize this

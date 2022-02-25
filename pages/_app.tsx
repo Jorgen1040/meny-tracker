@@ -12,7 +12,9 @@ function MyApp({ Component, pageProps }: AppProps) {
         <link rel="icon" href="/favicon-32x32.png" />
       </Head>
       <Navbar />
-      <Component {...pageProps} />
+      <div className="container mx-auto w-3/4">
+        <Component {...pageProps} />  
+      </div>
     </>
   )
 }

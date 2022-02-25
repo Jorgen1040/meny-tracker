@@ -92,28 +92,17 @@ export default function Produkt({ product, priceChanges, associated }: { product
             }
         }
     });
-    // Convert to human readable timestamps
-    const humanDates: any[] = [];
-    priceChanges.forEach(change => {
-        humanDates.push({
-            timestamp: change.timestamp,
-            pricePerUnit: change.pricePerUnit,
-            date: moment(change.timestamp).toDate()
-        });
-    })
-    // console.log(humanDates);
     // TODO: Show important times in graph (highlight areas with sales)
     return (
         <>
             <Head>
                 <title>Priser for {product.title} - Meny Tracker</title>
             </Head>
-            <div className="container mx-auto w-3/4">
-                <ProductView product={product} />
-                <div>
-                    <h1 className="text-2xl my-3">Prishistorikk</h1>
-                    <ResponsiveContainer width="100%" height={300} >
-                        <AreaChart
+            <ProductView product={product} />
+            <div>
+                <h1 className="text-2xl my-3">Prishistorikk</h1>
+                <ResponsiveContainer width="100%" height={300} >
+                    <AreaChart
                         data={priceChanges}
                         margin={{
                             top: 5,
@@ -121,25 +110,24 @@ export default function Produkt({ product, priceChanges, associated }: { product
                             left: 20,
                             bottom: 5
                         }}
-                        >
-                            <CartesianGrid strokeDasharray="3 3" />
-                            <XAxis dataKey="timestamp" tickFormatter={timeStr => moment(timeStr).format('DD.MM.YY')} />
-                            <YAxis dataKey="pricePerUnit" />
-                            <Tooltip separator=': ' labelFormatter={timeStr => moment(timeStr).format('DD.MM.YY')} />
-                            <Area type="linear" dataKey="pricePerUnit" stroke="#8884d8" name="Pris" unit=" kr" />
-                        </AreaChart>
-                    </ResponsiveContainer>
-                </div>
-                <div>
-                    <h1 className="text-2xl my-3">Lignende produkter</h1>
-                    <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-5 gap-5">
-                        {
-                            associated.map((product: any, index: number) => (
-                                <ProductTile key={index} product={product} />
-                            ))
-                            
-                        }
-                    </div>
+                    >
+                        <CartesianGrid strokeDasharray="3 3" />
+                        <XAxis dataKey="timestamp" tickFormatter={timeStr => moment(timeStr).format('DD.MM.YY')} />
+                        <YAxis dataKey="pricePerUnit" />
+                        <Tooltip separator=': ' labelFormatter={timeStr => moment(timeStr).format('DD.MM.YY')} />
+                        <Area type="linear" dataKey="pricePerUnit" stroke="#8884d8" name="Pris" unit=" kr" />
+                    </AreaChart>
+                </ResponsiveContainer>
+            </div>
+            <div>
+                <h1 className="text-2xl my-3">Lignende produkter</h1>
+                <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-5 gap-5">
+                    {
+                        associated.map((product: any, index: number) => (
+                            <ProductTile key={index} product={product} />
+                        ))
+                        
+                    }
                 </div>
             </div>
         </>

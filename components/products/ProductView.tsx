@@ -6,9 +6,9 @@ import Image from "next/image";
 export default function ProductView({ product }: { product: any }) {
     // Get image, name, price, and description
     const name = product.title
-    const image = "https://res.cloudinary.com/norgesgruppen/image/upload/f_auto,q_50,w_320,h_320,c_pad/" + product.imageName
+    //const image = "https://res.cloudinary.com/norgesgruppen/image/upload/f_auto,q_50,w_320,h_320,c_pad/" + product.imageName
     // TODO: Update to new image hosting (and deal with the Image tag resizing weirdness)
-    //const image = "https://bilder.ngdata.no/" + product.ean + "/meny/medium.jpg"
+    const image = "https://bilder.ngdata.no/" + product.ean + "/meny/medium.jpg"
     const price = product.pricePerUnit.toFixed(2)
     function menyRedirect() {
         const url = "https://meny.no/varer" + product.slugifiedUrl
@@ -16,8 +16,8 @@ export default function ProductView({ product }: { product: any }) {
     }
     return (
         <div className="flex my-8">
-            <div className="mr-24">
-                <Image src={image} alt={name} height={232} width={232} />
+            <div className="mr-24 relative w-64 h-64">
+                <Image src={image} alt={name} layout="fill" objectFit="contain" />
             </div>
             <div>
                 <h1 className="text-3xl">{name}</h1>

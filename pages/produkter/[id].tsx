@@ -27,14 +27,14 @@ interface Change {
     pricePerUnit: number;
 }
 
-export default function Produkt({ product, priceChanges, associated }: { product: any, priceChanges: Change[], associated: any }) {
+export default function Produkt({ product, priceChanges, associated }: { product: any, priceChanges: Change[], associated: any[] }) {
     const router = useRouter();
     const { id } = router.query;
     
     // Handle loading page
     if (router.isFallback) {
         return (
-            <div className="grid place-items-center h-screen">
+            <div className="grid place-items-center">
                 <Loader show />
             </div>
         )
@@ -42,7 +42,7 @@ export default function Produkt({ product, priceChanges, associated }: { product
 
     if (!product) {
         return (
-            <div className="grid h-screen">
+            <div className="grid">
                 <div>
                     <h1 className="text-center text-5xl text-red-400 my-32">Produktet finnes ikke</h1>
                     {/* <h1 className="text-center">Leter du etter disse?</h1> */}
@@ -121,14 +121,19 @@ export default function Produkt({ product, priceChanges, associated }: { product
             </div>
             <div>
                 <h1 className="text-2xl my-3">Lignende produkter</h1>
-                <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-5 gap-5">
-                    {
-                        associated.map((product: any, index: number) => (
-                            <ProductTile key={index} product={product} />
-                        ))
-                        
-                    }
-                </div>
+                {/* TODO: Find our own associated products in case they don't exist in database */}
+                { associated.length > 0 ?
+                    <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-5 gap-5">
+                        {
+                            associated.map((product: any, index: number) => (
+                                <ProductTile key={index} product={product} />
+                            ))
+                            
+                        }
+                    </div>
+                    :
+                    <h1 className="text-xl text-red-400">Fant ingen lignende produkter</h1>
+                }
             </div>
         </>
     );
@@ -162,16 +167,19 @@ export async function getStaticProps({ params }: Params) {
     // Get all associated product documents
     // TODO: Find out why this function gets a random amount of products
     const associated: any[] = [];
-    product.associated.products.slice(0, 10).forEach(async (id: string, index: number) => {
-        const product = await client.db("meny")
-                                    .collection("products")
-                                    .findOne(
-                                        {"ean": id},
-                                        {"projection": {"_id": 0}}
-                                    );
-        if (!product) return;
-        associated.push(product);
-    });
+    // ? not all products have an associated list for some reason (newly added products?)
+    if(product.associated) {
+        product.associated.products.slice(0, 10).forEach(async (id: string, index: number) => {
+            const product = await client.db("meny")
+                                        .collection("products")
+                                        .findOne(
+                                            {"ean": id},
+                                            {"projection": {"_id": 0}}
+                                        );
+            if (!product) return;
+            associated.push(product);
+        });
+    }
 
     // Get all the price changes for the product
     const prices_cursor = client.db("meny")

@@ -11,7 +11,10 @@ export default function Home() {
       </div>
       <div>
         <h1 className="text-3xl my-3">Nye produkter</h1>
-        {/* isNew: true */}
+        {/* 
+          promotionDisplayName: "Nyhet!" 
+          (isNew is never true)
+        */}
       </div>
     </>
   )

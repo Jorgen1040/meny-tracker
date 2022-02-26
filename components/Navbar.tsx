@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { MenuIcon, SearchIcon,UserCircleIcon } from '@heroicons/react/solid';
+import { HomeIcon, MenuIcon, SearchIcon,UserCircleIcon } from '@heroicons/react/solid';
 import React, { FormEvent, useState } from 'react';
 
 // Top navbar
@@ -18,11 +18,15 @@ export default function Navbar() {
     }
 
     return (
-        <nav className="navbar bg-red-500 sticky top-0 z-40 w-full drop-shadow-xl">
+        <nav className="bg-red-500 sticky top-0 z-40 w-full drop-shadow-xl">
             <div className="max-w-8xl mx-auto">
                 <div className="py-5 px-8 lg:px-8 mx-4 lg:mx-0">
                     <div className="relative flex items-center justify-between">
-                        <MenuIcon className="left-8 w-8 h-8 justify-self-start" />
+                        <Link href="/">
+                            <a>
+                                <HomeIcon className="left-8 w-8 h-8 justify-self-start" />
+                            </a>
+                        </Link>
                         <form onSubmit={redirect}>
                             <div className="relative text-gray-600 focus-within:text-gray-400 flex-grow">
                                 <span className="absolute inset-y-0 left-0 flex items-center pl-2">

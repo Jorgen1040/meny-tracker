@@ -4,15 +4,15 @@ import Link from "next/link";
 
 export default function ProductTile({ product }: { product: any }) {
     return (
-        <div className="rounded-lg shadow-xl  flex flex-col">
-            <div className="p-4 flex justify-center flex-grow">
+        <div className="rounded-lg shadow-xl hover:shadow-2xl border border-gray-400 border-opacity-0 hover:border-opacity-20 flex flex-col transition-all">
+            <div className="p-4 flex justify-center">
                 <Link href={`${product.ean}`} prefetch={false}>
-                    <a>
+                    <a className="relative w-32 h-32">
                         <Image 
-                            src={"https://res.cloudinary.com/norgesgruppen/image/upload/f_auto,q_50,w_320,h_320,c_pad/" + product.imageName}
+                            src={"https://bilder.ngdata.no/" + product.ean + "/meny/medium.jpg"}
                             alt={product.title}
-                            height={120}
-                            width={120}
+                            layout="fill"
+                            objectFit="contain"
                         />
                     </a>
                 </Link>

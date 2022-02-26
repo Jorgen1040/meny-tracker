@@ -16,7 +16,7 @@ export default function ProductView({ product }: { product: any }) {
     }
     return (
         <div className="flex my-8">
-            <div className="mr-24 relative w-64 h-64">
+            <div className="sm:mr-24 mr-2 relative w-64 h-64">
                 <Image src={image} alt={name} layout="fill" objectFit="contain" />
             </div>
             <div>

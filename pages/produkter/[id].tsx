@@ -10,6 +10,7 @@ import Loader from '@components/Loader';
 import ProductView from '@components/products/ProductView';
 import ProductTile from '@components/products/ProductTile';
 import Head from 'next/head';
+import { getClientBuildManifest } from 'next/dist/client/route-loader';
 
 
 const logger = pino({
@@ -30,11 +31,12 @@ interface Change {
 export default function Produkt({ product, priceChanges, associated }: { product: any, priceChanges: Change[], associated: any[] }) {
     const router = useRouter();
     const { id } = router.query;
+    if (associated) console.log(associated.length);
     
     // Handle loading page
     if (router.isFallback) {
         return (
-            <div className="grid place-items-center">
+            <div className="grid place-items-center mt-80">
                 <Loader show />
             </div>
         )
@@ -85,7 +87,7 @@ export default function Produkt({ product, priceChanges, associated }: { product
     priceChanges.forEach((change, index) => {
         const prevChange = priceChanges[index - 1];
         const nextChange = priceChanges[index + 1];
-        if (nextChange && moment(change.timestamp).format('DD.MM.YY') === moment(nextChange.timestamp).format('DD.MM.YY')) {
+        if (prevChange && nextChange && moment(change.timestamp).format('DD.MM.YY') === moment(nextChange.timestamp).format('DD.MM.YY')) {
             // Remove the price that didn't change
             if (prevChange.pricePerUnit === change.pricePerUnit && nextChange.pricePerUnit !== change.pricePerUnit) {
                 priceChanges.splice(index, 1);
@@ -119,7 +121,7 @@ export default function Produkt({ product, priceChanges, associated }: { product
                     </AreaChart>
                 </ResponsiveContainer>
             </div>
-            <div>
+            <div className="mb-12">
                 <h1 className="text-2xl my-3">Lignende produkter</h1>
                 {/* TODO: Find our own associated products in case they don't exist in database */}
                 { associated.length > 0 ?
@@ -163,22 +165,19 @@ export async function getStaticProps({ params }: Params) {
             props: {}
         }
     }
-
     // Get all associated product documents
-    // TODO: Find out why this function gets a random amount of products
     const associated: any[] = [];
     // ? not all products have an associated list for some reason (newly added products?)
     if(product.associated) {
-        product.associated.products.slice(0, 10).forEach(async (id: string, index: number) => {
-            const product = await client.db("meny")
-                                        .collection("products")
-                                        .findOne(
-                                            {"ean": id},
-                                            {"projection": {"_id": 0}}
-                                        );
-            if (!product) return;
-            associated.push(product);
-        });
+        const associated_ids = product.associated.products.slice(0, 10);
+        const associatedProducts = await client.db("meny")
+                                                .collection("products")
+                                                .find(
+                                                    {"ean": {$in: associated_ids}},
+                                                    {"projection": {"_id": 0}}
+                                                )
+                                                .toArray();
+        associated.push(...associatedProducts);
     }
 
     // Get all the price changes for the product
@@ -199,8 +198,6 @@ export async function getStaticProps({ params }: Params) {
         };
     }).toArray();
 
-    // Add missing values to priceChanges between days
-    
     return {
         props: { 
             product,
@@ -213,7 +210,6 @@ export async function getStaticProps({ params }: Params) {
 }
 
 export async function getStaticPaths() {
-    logger.info("getStaticPaths ran")
     // const client = await clientPromise;
     // const products = client.db("meny")
     //                        .collection("products")

@@ -1,9 +1,11 @@
 import '../styles/globals.css'
-import Navbar from '../components/Navbar'
+import Layout from '@components/Layout'
 import { AppProps } from 'next/app'
 import Head from 'next/head'
 
 function MyApp({ Component, pageProps }: AppProps) {
+  // TODO: Add SEO
+  // TODO: Add footer
   return (
     <>
       <Head>
@@ -11,10 +13,11 @@ function MyApp({ Component, pageProps }: AppProps) {
         <meta name="description" content="Se prisene på Meny" />
         <link rel="icon" href="/favicon-32x32.png" />
       </Head>
-      <Navbar />
-      <div className="container mx-auto w-3/4">
-        <Component {...pageProps} />  
-      </div>
+      <Layout>
+        <div className="container mx-auto w-3/4">
+          <Component {...pageProps} />  
+        </div>
+      </Layout>
     </>
   )
 }

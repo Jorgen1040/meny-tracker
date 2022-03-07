@@ -14,7 +14,7 @@ function MyApp({ Component, pageProps }: AppProps) {
         <link rel="icon" href="/favicon-32x32.png" />
       </Head>
       <Layout>
-        <div className="container mx-auto w-3/4">
+        <div className="container mx-auto max-w-5xl">
           <Component {...pageProps} />  
         </div>
       </Layout>

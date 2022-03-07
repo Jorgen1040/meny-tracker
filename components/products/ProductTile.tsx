@@ -3,6 +3,7 @@ import Link from "next/link";
 import SaleIcon from "../../public/sale_sticker.svg";
 
 export default function ProductTile({ product }: { product: any }) {
+    // TODO: Add image blur
     return (
         <div className="rounded-lg shadow-xl hover:shadow-2xl border border-gray-400 border-opacity-0 hover:border-opacity-20 flex flex-col transition-all">
             <div className="p-4 flex justify-center">

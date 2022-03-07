@@ -6,8 +6,7 @@ import Image from "next/image";
 export default function ProductView({ product }: { product: any }) {
     // Get image, name, price, and description
     const name = product.title
-    //const image = "https://res.cloudinary.com/norgesgruppen/image/upload/f_auto,q_50,w_320,h_320,c_pad/" + product.imageName
-    // TODO: Update to new image hosting (and deal with the Image tag resizing weirdness)
+    // TODO: Add image blur
     const image = "https://bilder.ngdata.no/" + product.ean + "/meny/medium.jpg"
     const price = product.pricePerUnit.toFixed(2)
     function menyRedirect() {

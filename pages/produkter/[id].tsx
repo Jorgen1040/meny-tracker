@@ -26,6 +26,7 @@ const logger = pino({
 interface Change {
     timestamp: number;
     pricePerUnit: number;
+    isOffer: boolean;
 }
 
 export default function Produkt({ product, priceChanges, associated }: { product: any, priceChanges: Change[], associated: any[] }) {
@@ -64,22 +65,18 @@ export default function Produkt({ product, priceChanges, associated }: { product
         const change = priceChanges[i];
         const nextChange = priceChanges[i + 1];
         if (nextChange && nextChange.timestamp - change.timestamp > 86400000) {
-            // logger.info({
-            //     nextChange,
-            //     date: moment(nextChange.timestamp).toDate(),
-            //     change,
-            //     diff: nextChange.timestamp - change.timestamp
-            // });
             priceChanges.splice(i + 1, 0, {
                 timestamp: change.timestamp + 86400000,
-                pricePerUnit: change.pricePerUnit
+                pricePerUnit: change.pricePerUnit,
+                isOffer: change.isOffer,
             });
         }
         // Fill in data up to current date
         if (!nextChange && Date.now() - change.timestamp > 86400000) {
             priceChanges.splice(i + 1, 0, {
                 timestamp: change.timestamp + 86400000,
-                pricePerUnit: change.pricePerUnit
+                pricePerUnit: change.pricePerUnit,
+                isOffer: change.isOffer,
             });
         }
     }
@@ -117,7 +114,9 @@ export default function Produkt({ product, priceChanges, associated }: { product
                         <XAxis dataKey="timestamp" tickFormatter={timeStr => moment(timeStr).format('DD.MM.YY')} />
                         <YAxis dataKey="pricePerUnit" />
                         <Tooltip separator=': ' labelFormatter={timeStr => moment(timeStr).format('DD.MM.YY')} />
-                        <Area type="linear" dataKey="pricePerUnit" stroke="#8884d8" name="Pris" unit=" kr" />
+                        {/* linear or monotone? */}
+                        <Area type="monotone" dataKey="pricePerUnit" stroke="#8884d8" name="Pris" unit=" kr" />
+                        <Area type="monotone" dataKey="isOffer" stroke="#82ca9d" name="Tilbud?" />
                     </AreaChart>
                 </ResponsiveContainer>
             </div>
@@ -194,7 +193,8 @@ export async function getStaticProps({ params }: Params) {
     let priceChanges: Change[] = await prices_cursor.map((item) => {
         return {
             timestamp: item.timestamp.getTime(),
-            pricePerUnit: item.pricePerUnit
+            pricePerUnit: item.pricePerUnit,
+            isOffer: item.isOffer?.toString() === "true"
         };
     }).toArray();
 

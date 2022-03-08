@@ -3,7 +3,7 @@ import ProductTile from "@components/products/ProductTile";
 import { randomizeArray } from "@lib/utils";
 
 export default function Home({offers}: {offers: any[]}) {
-  console.log(offers);
+  offers = randomizeArray(offers)
 
   return (
     <>
@@ -44,7 +44,7 @@ export async function getStaticProps() {
 
   return {
       props: { 
-          offers: randomizeArray(offers)
+          offers
       },
       // Revalidate after 10 minutes
       revalidate: 600

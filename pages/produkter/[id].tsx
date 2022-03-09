@@ -116,7 +116,7 @@ export default function Produkt({ product, priceChanges, associated }: { product
                         <Tooltip separator=': ' labelFormatter={timeStr => moment(timeStr).format('DD.MM.YY')} />
                         {/* linear or monotone? */}
                         <Area type="monotone" dataKey="pricePerUnit" stroke="#8884d8" name="Pris" unit=" kr" />
-                        <Area type="monotone" dataKey="isOffer" stroke="#82ca9d" name="Tilbud?" />
+                        {/* <Area type="monotone" dataKey="isOffer" stroke="#82ca9d" name="Tilbud?" /> */}
                     </AreaChart>
                 </ResponsiveContainer>
             </div>

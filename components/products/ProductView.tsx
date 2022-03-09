@@ -1,6 +1,7 @@
 import Loader from "@components/Loader";
 import { Product } from "@lib/types/product";
 import Image from "next/image";
+import SaleIcon from "../../public/sale_sticker.svg";
 
 
 export default function ProductView({ product }: { product: any }) {
@@ -16,6 +17,14 @@ export default function ProductView({ product }: { product: any }) {
     return (
         <div className="flex my-8">
             <div className="sm:mr-24 mr-2 relative w-64 h-64">
+                { product.isOffer &&
+                    <span className="fill-red-500 absolute right-0 z-10 flex rotate-12">
+                        <span className="absolute left-0 right-0 text-center top-1/4 text-white">
+                            {(((product.pricePerUnit-product.pricePerUnitOriginal)/product.pricePerUnitOriginal)*100).toFixed(0)}%
+                        </span>
+                        <SaleIcon width={48} height={48} />
+                    </span>
+                }
                 <Image src={image} alt={name} layout="fill" objectFit="contain" />
             </div>
             <div>

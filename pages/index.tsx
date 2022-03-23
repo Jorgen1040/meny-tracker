@@ -24,6 +24,10 @@ export default function Home({offers}: {offers: any[]}) {
           (isNew is never true)
         */}
       </div>
+      <div>
+        <h1 className="text-3xl my-3">Endringer</h1>
+        {/* This would be a list of changes (think diff) with + and - symbols for products */}
+      </div>
     </>
   );
 }

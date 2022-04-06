@@ -9,6 +9,7 @@ export default function ProductTile({ product }: { product: any }) {
             <div className="p-4 flex justify-center">
                 <Link href={`/produkter/${product.ean}`} prefetch={false}>
                     <a className="relative w-32 h-32">
+                        {/* Percentage sticker */}
                         { product.isOffer &&
                             <span className="fill-red-500 absolute right-0 z-10 flex rotate-12">
                                 <span className="absolute left-0 right-0 text-center top-1/4 text-white">
@@ -36,11 +37,11 @@ export default function ProductTile({ product }: { product: any }) {
             </div>
             <div className="relative p-2">
                 { product.isOffer &&
-                    <p className="absolute -top-2 text-gray-400"><s>kr {product.pricePerUnitOriginal.toFixed(2)}</s></p>
+                    <p className="absolute -top-2 text-gray-400"><s>kr {product.pricePerUnitOriginal.toFixed(2).replace(".", ",")}</s></p>
                 }
-                <p className="text-xl">kr {product.pricePerUnit.toFixed(2)}</p>
+                <p className="text-xl">kr {product.pricePerUnit.toFixed(2).replace(".", ",")}</p>
                 { product.comparePricePerUnit ?
-                    <p className="text-sm text-gray-500">kr {product.comparePricePerUnit.toFixed(2)}/{product.compareUnit}</p>
+                    <p className="text-sm text-gray-500">kr {product.comparePricePerUnit.toFixed(2).replace(".", ",")}/{product.compareUnit}</p>
                 : <div className="h-5"></div>
                 }
             </div>

@@ -193,7 +193,7 @@ export async function getStaticProps({ params }: Params) {
     let priceChanges: Change[] = await prices_cursor.map((item) => {
         return {
             timestamp: item.timestamp.getTime(),
-            pricePerUnit: item.pricePerUnit.toFixed(2),
+            pricePerUnit: item.pricePerUnit.toFixed(2).replace(".", ","),
             isOffer: item.isOffer?.toString() === "true"
         };
     }).toArray();

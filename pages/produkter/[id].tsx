@@ -136,6 +136,7 @@ export default function Produkt({
             <YAxis dataKey="pricePerUnit" />
             <Tooltip
               separator=": "
+              formatter={(value: string) => `${value.replace(".", ",")}`}
               labelFormatter={(timeStr) => moment(timeStr).format("DD.MM.YY")}
             />
             {/* linear or monotone? */}
@@ -217,7 +218,7 @@ export async function getStaticProps({ params }: Params) {
     .map((item) => {
       return {
         timestamp: item.timestamp.getTime(),
-        pricePerUnit: item.pricePerUnit.toFixed(2).replace(".", ","),
+        pricePerUnit: item.pricePerUnit.toFixed(2),
         isOffer: item.isOffer?.toString() === "true",
       };
     })

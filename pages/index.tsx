@@ -40,14 +40,19 @@ export async function getStaticProps() {
     .db("meny")
     .collection("products")
     .find({ isOffer: true }, { projection: { _id: 0 } })
+    .limit(5)
     .toArray();
 
   let offers = offersCursor.map((offer: any) => {
     return offer;
   });
 
-  const offerCount = offers.length;
-  offers = randomizeArray(offers).splice(0, 5);
+  const offerCount = await client
+    .db("meny")
+    .collection("products")
+    .find({ isOffer: true })
+    .count();
+  offers = randomizeArray(offers);
 
   return {
     props: {

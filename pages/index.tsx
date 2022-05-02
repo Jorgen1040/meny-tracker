@@ -2,25 +2,27 @@ import clientPromise from "@lib/mongodb";
 import ProductTile from "@components/products/ProductTile";
 import { randomizeArray } from "@lib/utils";
 
-export default function Home({offers}: {offers: any[]}) {
-  offers = randomizeArray(offers)
-
+export default function Home({
+  offers,
+  offerCount,
+}: {
+  offers: any[];
+  offerCount: number;
+}) {
   return (
     <>
       <div>
-        <h1 className="text-3xl my-3">På tilbud nå (totalt {offers.length})</h1>
+        <h1 className="text-3xl my-3">På tilbud nå (totalt {offerCount})</h1>
         <div className="flex w-full overflow-hidden gap-4">
-          {
-            offers.map((offer: any, index: number) => (
-              <ProductTile key={index} product={offer} />
-            ))
-          }
+          {offers.map((offer: any, index: number) => (
+            <ProductTile key={index} product={offer} />
+          ))}
         </div>
       </div>
       <div>
         <h1 className="text-3xl my-3">Nye produkter</h1>
-        {/* 
-          promotionDisplayName: "Nyhet!" 
+        {/*
+          promotionDisplayName: "Nyhet!"
           (isNew is never true)
         */}
       </div>
@@ -34,23 +36,25 @@ export default function Home({offers}: {offers: any[]}) {
 
 export async function getStaticProps() {
   const client = await clientPromise;
-  const offersCursor = await client.db("meny")
-                             .collection("products")
-                             .find(
-                                { "isOffer": true },
-                                { "projection": { "_id": 0 } }
-                              )
-                             .toArray();
-  
-  const offers = offersCursor.map((offer: any) => {
+  const offersCursor = await client
+    .db("meny")
+    .collection("products")
+    .find({ isOffer: true }, { projection: { _id: 0 } })
+    .toArray();
+
+  let offers = offersCursor.map((offer: any) => {
     return offer;
   });
 
+  const offerCount = offers.length;
+  offers = randomizeArray(offers).splice(0, 5);
+
   return {
-      props: { 
-          offers
-      },
-      // Revalidate after 10 minutes
-      revalidate: 600
-  }
+    props: {
+      offers,
+      offerCount,
+    },
+    // Revalidate after 10 minutes
+    revalidate: 600,
+  };
 }

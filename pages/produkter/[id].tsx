@@ -2,15 +2,24 @@ import { useRouter } from 'next/router';
 import clientPromise from '@lib/mongodb';
 import dynamic from 'next/dynamic';
 import pino from 'pino';
-// TODO: Swap recharts with own implementation (3.js?)
-import { CartesianGrid, LineChart, XAxis, YAxis, Area, ResponsiveContainer, AreaChart, Tooltip } from 'recharts';
+// TODO: Swap recharts with own implementation (3.js?) Maybe not?
+import {
+  CartesianGrid,
+  XAxis,
+  YAxis,
+  Area,
+  ResponsiveContainer,
+  AreaChart,
+  Tooltip,
+  ReferenceArea,
+  Label,
+} from "recharts";
 // TODO: Use alternative for moment
-import moment from 'moment';
-import Loader from '@components/Loader';
-import ProductView from '@components/products/ProductView';
-import ProductTile from '@components/products/ProductTile';
-import Head from 'next/head';
-import { getClientBuildManifest } from 'next/dist/client/route-loader';
+import moment from "moment";
+import Loader from "@components/Loader";
+import ProductView from "@components/products/ProductView";
+import ProductTile from "@components/products/ProductTile";
+import Head from "next/head";
 
 
 const logger = pino({
@@ -29,14 +38,21 @@ interface Change {
   isOffer: boolean;
 }
 
+interface SaleRange {
+  start: number;
+  end?: number;
+}
+
 export default function Produkt({
   product,
   priceChanges,
   associated,
+  saleRanges,
 }: {
   product: any;
   priceChanges: Change[];
   associated: any[];
+  saleRanges: SaleRange[];
 }) {
   const router = useRouter();
   const { id } = router.query;
@@ -148,6 +164,26 @@ export default function Produkt({
               unit=" kr"
             />
             {/* <Area type="monotone" dataKey="isOffer" stroke="#82ca9d" name="Tilbud?" /> */}
+            {saleRanges.map(
+              (saleRange) => (
+                console.log(saleRange),
+                (
+                  <ReferenceArea
+                    key={saleRange.start}
+                    x1={saleRange.start}
+                    x2={saleRange.end ? saleRange.end : undefined}
+                    fill="orange"
+                    fillOpacity={0.3}
+                  >
+                    <Label
+                      value="Salg"
+                      position="insideBottomLeft"
+                      opacity={0.6}
+                    />
+                  </ReferenceArea>
+                )
+              )
+            )}
           </AreaChart>
         </ResponsiveContainer>
       </div>
@@ -187,11 +223,8 @@ export async function getStaticProps({ params }: Params) {
     .findOne({ ean: id }, { projection: { _id: 0 } });
 
   // If no product was found, return nothing
-  if (!product) {
-    return {
-      props: {},
-    };
-  }
+  if (!product) return { props: {} };
+
   // Get all associated product documents
   const associated: any[] = [];
   // ? not all products have an associated list for some reason (newly added products?)
@@ -224,11 +257,44 @@ export async function getStaticProps({ params }: Params) {
     })
     .toArray();
 
+  let saleRanges: SaleRange[] = [];
+  // Go through priceChanges and find timestamps between isOffer
+  for (let i = 0; i < priceChanges.length; i++) {
+    const change = priceChanges[i];
+    if (change.isOffer) {
+      // Only display sale if after fixing database script
+      if (change.timestamp > 1654394419000) {
+        for (let j = i; j < priceChanges.length; j++) {
+          const nextChange = priceChanges[j];
+          if (!nextChange.isOffer) {
+            saleRanges.push({
+              start: change.timestamp,
+              end: nextChange.timestamp,
+            });
+            i = j;
+            break;
+          }
+          if (j === priceChanges.length - 1) {
+            // TODO: Display future sale end date (if included in product.promotions[n].to)
+            // ? Can be checked by finding item in promotions that's promotions[n].isMarketed
+            // ? Might have to set up a blacklist of certain promotion IDs that don't affect price (ex. Jacobs utvalgte)
+            // ? Add a dotted line up until end of sale (expected price)
+            saleRanges.push({
+              start: change.timestamp,
+            });
+          }
+        }
+      }
+    }
+  }
+  console.log(saleRanges);
+
   return {
     props: {
       product,
       priceChanges,
       associated,
+      saleRanges,
     },
     // Revalidate after 10 minutes
     revalidate: 600,

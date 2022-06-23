@@ -3,4 +3,8 @@ module.exports = {
   images: {
     domains: ["res.cloudinary.com", "bilder.ngdata.no"],
   },
+  i18n: {
+    locales: ["nb"],
+    defaultLocale: "nb",
+  },
 };

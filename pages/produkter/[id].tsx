@@ -67,24 +67,6 @@ export default function Produkt({
     );
   }
 
-  if (!product) {
-    return (
-      <div className="grid">
-        <div>
-          <h1 className="text-center text-5xl text-red-400 my-32">
-            Produktet finnes ikke
-          </h1>
-          {/* <h1 className="text-center">Leter du etter disse?</h1> */}
-          {/* TODO: Vis liste med produkter via Atlas Search med query */}
-        </div>
-      </div>
-    );
-  }
-
-  // console.log(product);
-  // console.log(priceChanges);
-  // console.log(associated);
-
   // Iterate over priceChanges and add missing values
   // If there is a change loop over the entire array again
   for (let i = 0; i < priceChanges.length; i++) {
@@ -157,7 +139,7 @@ export default function Produkt({
             />
             {/* linear or monotone? */}
             <Area
-              type="monotone"
+              type="linear"
               dataKey="pricePerUnit"
               stroke="#8884d8"
               name="Pris"
@@ -197,7 +179,7 @@ export default function Produkt({
             ))}
           </div>
         ) : (
-          <h1 className="text-xl text-red-400">
+          <h1 className="text-xl text-red-400 mb-[4.8rem]">
             Fant ingen lignende produkter
           </h1>
         )}
@@ -223,7 +205,7 @@ export async function getStaticProps({ params }: Params) {
     .findOne({ ean: id }, { projection: { _id: 0 } });
 
   // If no product was found, return nothing
-  if (!product) return { props: {} };
+  if (!product) return { notFound: true };
 
   // Get all associated product documents
   const associated: any[] = [];

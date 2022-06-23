@@ -13,7 +13,7 @@ export default function Home({
     <>
       <div>
         <h1 className="text-3xl my-3">På tilbud nå (totalt {offerCount})</h1>
-        <div className="flex w-full overflow-hidden gap-4">
+        <div className="flex w-full overflow-hidden gap-4 p-8">
           {offers.map((offer: any, index: number) => (
             <ProductTile key={index} product={offer} />
           ))}

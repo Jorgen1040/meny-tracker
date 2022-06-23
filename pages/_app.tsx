@@ -10,16 +10,20 @@ function MyApp({ Component, pageProps }: AppProps) {
     <>
       <Head>
         <title>Meny Tracker</title>
-        <meta name="description" content="Se prisene på Meny" />
+        <meta
+          name="description"
+          content="Spor prisene på Meny sine butikker, og få varslinger når ditt
+          favorittprodukt er på tilbud!"
+        />
         <link rel="icon" href="/favicon-32x32.png" />
       </Head>
       <Layout>
         <div className="container mx-auto max-w-5xl">
-          <Component {...pageProps} />  
+          <Component {...pageProps} />
         </div>
       </Layout>
     </>
-  )
+  );
 }
 
 export default MyApp

@@ -168,7 +168,7 @@ export default function Produkt({
             ))}
           </div>
         ) : (
-          <h1 className="text-xl text-red-400 mb-[4.8rem]">
+          <h1 className="text-xl text-red-400 mb-[4.5rem]">
             Fant ingen lignende produkter
           </h1>
         )}

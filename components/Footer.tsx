@@ -12,8 +12,9 @@ export default function Footer() {
   const router = useRouter();
 
   return (
+    // TODO: Figure out a way to check if page is 404 here as well
     <footer
-      className={`p-6 bg-gray-200 ${
+      className={`px-6 py-4 bg-gray-200 ${
         router.route.includes("/produkter/") && !router.isFallback
           ? ""
           : "absolute bottom-0 w-full"
@@ -22,8 +23,13 @@ export default function Footer() {
       <div className="md:flex md:justify-between">
         <span className="text-sm text-gray-500 sm:text-center">
           Copyright &copy; {new Date().getFullYear()}{" "}
-          <a href="https://ringstad.dev/" className="hover:underline">
+          <a href="https://ringstad.dev" className="hover:underline">
             ringstad.dev
+          </a>
+          <br />
+          Alle bilder tilhører{" "}
+          <a href="https://meny.no" className="hover:underline">
+            MENY
           </a>
         </span>
 

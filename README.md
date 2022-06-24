@@ -23,3 +23,5 @@ Currently this site is in its early stages, with plenty of features still in the
   - [ ] as a push notifcation (via browser API)
   - [ ] as an email
   - [ ] SMS? (Most likely not)
+- [ ] Add other grocery stores (KIWI)
+- [ ] Add legal stuff? (Privacy Policy, and TOS)

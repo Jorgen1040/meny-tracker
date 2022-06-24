@@ -2,7 +2,7 @@ import Link from "next/link";
 
 export default function Custom404() {
   return (
-    <div className="grid mb-[37.8rem]">
+    <div className="grid mb-[37.5rem]">
       <div>
         <h1 className="text-center text-5xl text-red-400 mt-32">
           Du er på villspor

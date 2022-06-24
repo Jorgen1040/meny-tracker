@@ -1,6 +1,6 @@
 # Meny Tracker
 
-FYI: This readme is going to be written in English, but the site itself is in Norwegian.
+*FYI: This readme is going to be written in English, but the site itself is in Norwegian.*
 
 Meny Tracker is a site that tracks price changes at the grocery store Meny, and displays graphs for each product in the catalogue. In addition you can get notifications for when your favorite product is on sale.
 
@@ -25,3 +25,4 @@ Currently this site is in its early stages, with plenty of features still in the
   - [ ] SMS? (Most likely not)
 - [ ] Add other grocery stores (KIWI)
 - [ ] Add legal stuff? (Privacy Policy, and TOS)
+- [ ] Refactor database to only include fields required, and add fields for stuff like if item was added newly and popularity on our site

@@ -55,8 +55,6 @@ export default function Produkt({
   saleRanges: SaleRange[];
 }) {
   const router = useRouter();
-  const { id } = router.query;
-  if (associated) console.log(associated.length);
 
   // Handle loading page
   if (router.isFallback) {
@@ -145,27 +143,18 @@ export default function Produkt({
               name="Pris"
               unit=" kr"
             />
-            {/* <Area type="monotone" dataKey="isOffer" stroke="#82ca9d" name="Tilbud?" /> */}
-            {saleRanges.map(
-              (saleRange) => (
-                console.log(saleRange),
-                (
-                  <ReferenceArea
-                    key={saleRange.start}
-                    x1={saleRange.start}
-                    x2={saleRange.end ? saleRange.end : undefined}
-                    fill="orange"
-                    fillOpacity={0.3}
-                  >
-                    <Label
-                      value="Salg"
-                      position="insideBottomLeft"
-                      opacity={0.6}
-                    />
-                  </ReferenceArea>
-                )
-              )
-            )}
+            {saleRanges.map((saleRange) => (
+              // console.log(saleRange),
+              <ReferenceArea
+                key={saleRange.start}
+                x1={saleRange.start}
+                x2={saleRange.end ? saleRange.end : undefined}
+                fill="orange"
+                fillOpacity={0.3}
+              >
+                <Label value="Salg" position="insideBottomLeft" opacity={0.6} />
+              </ReferenceArea>
+            ))}
           </AreaChart>
         </ResponsiveContainer>
       </div>
@@ -269,7 +258,7 @@ export async function getStaticProps({ params }: Params) {
       }
     }
   }
-  console.log(saleRanges);
+  // console.log(saleRanges);
 
   return {
     props: {

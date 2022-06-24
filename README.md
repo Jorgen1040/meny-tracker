@@ -1,34 +1,25 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Meny Tracker
 
-## Getting Started
+FYI: This readme is going to be written in English, but the site itself is in Norwegian.
 
-First, run the development server:
+Meny Tracker is a site that tracks price changes at the grocery store Meny, and displays graphs for each product in the catalogue. In addition you can get notifications for when your favorite product is on sale.
 
-```bash
-npm run dev
-# or
-yarn dev
-```
+## The website
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+The website itself is built using NextJS, TypeScript and TailwindCSS. It also relies on some libraries for extra stuff (most notably Recharts for the price graphs).
 
-You can start editing the page by modifying `pages/index.js`. The page auto-updates as you edit the file.
+## The backend
 
-[API routes](https://nextjs.org/docs/api-routes/introduction) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.js`.
+The backend is mostly managed by a Python script that collects price/product data every hour. You won't find the code for that in this repository since I don't want it to be abused to spam their (undocumented) API. This script then uploads all price changes and product changes to a MongoDB database, from which the website gets its data from.
 
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/api-routes/introduction) instead of React pages.
+## The future
 
-## Learn More
+Currently this site is in its early stages, with plenty of features still in the works/planned. The biggest milestones are as follows:
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+- [x] Collect price and product details in an efficient way
+- [x] Display price data on website
+- [ ] Utilize MongoDB's Atlas Search to create a search bar
+- [ ] Allow users to get notifications when their favorite items are on sale:
+  - [ ] as a push notifcation (via browser API)
+  - [ ] as an email
+  - [ ] SMS? (Most likely not)

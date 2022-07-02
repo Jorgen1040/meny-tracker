@@ -1,14 +1,18 @@
 import clientPromise from "@lib/mongodb";
 import ProductTile from "@components/products/ProductTile";
 import { randomizeArray } from "@lib/utils";
+import type { NextPageWithLayout } from "./_app";
+import Footer from "@components/Footer";
+import Navbar from "@components/Navbar";
+import { ReactElement } from "react";
 
-export default function Home({
+const Home = ({
   offers,
   offerCount,
 }: {
   offers: any[];
   offerCount: number;
-}) {
+}) => {
   return (
     <>
       <div>
@@ -24,15 +28,29 @@ export default function Home({
         {/*
           promotionDisplayName: "Nyhet!"
           (isNew is never true)
+          Make a new database with products added/removed (timeseries?), then use that to find the newest products (say 1 week)
         */}
       </div>
       <div>
         <h1 className="text-3xl my-3">Endringer</h1>
-        {/* This would be a list of changes (think diff) with + and - symbols for products */}
+        {/*
+          This would be a list of changes (think diff) with + and - symbols for products
+          Use the new database to find the changes (timeseries?)
+        */}
       </div>
     </>
   );
-}
+};
+
+Home.getLayout = function getLayout(page: ReactElement) {
+  return (
+    <>
+      <Navbar />
+      {page}
+      <Footer fixedPlacement />
+    </>
+  );
+};
 
 export async function getStaticProps() {
   const client = await clientPromise;
@@ -63,3 +81,5 @@ export async function getStaticProps() {
     revalidate: 600,
   };
 }
+
+export default Home;

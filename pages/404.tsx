@@ -1,8 +1,12 @@
+import Navbar from "@components/Navbar";
 import Link from "next/link";
+import { ReactElement } from "react";
+import type { NextPageWithLayout } from "./_app";
+import Footer from "@components/Footer";
 
-export default function Custom404() {
+const Custom404: NextPageWithLayout = () => {
   return (
-    <div className="grid mb-[37.5rem]">
+    <div className="grid">
       <div>
         <h1 className="text-center text-5xl text-red-400 mt-32">
           Du er på villspor
@@ -15,4 +19,16 @@ export default function Custom404() {
       </div>
     </div>
   );
-}
+};
+
+Custom404.getLayout = function getLayout(page: ReactElement) {
+  return (
+    <>
+      <Navbar />
+      {page}
+      <Footer fixedPlacement />
+    </>
+  );
+};
+
+export default Custom404;

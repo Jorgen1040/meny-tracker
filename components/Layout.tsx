@@ -6,7 +6,7 @@ export default function Layout({ children }: PropsWithChildren<{}>) {
   return (
     <>
       <Navbar />
-      {children}
+      <main className="container mx-auto max-w-5xl">{children}</main>
       <Footer />
     </>
   );

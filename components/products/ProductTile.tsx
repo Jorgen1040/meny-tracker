@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import SaleIcon from "../../public/sale_sticker.svg";
+import { ReactComponent as SaleIcon } from "../../public/sale_sticker.svg";
 
 export default function ProductTile({ product }: { product: any }) {
   return (

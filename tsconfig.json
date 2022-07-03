@@ -17,6 +17,9 @@
       "@public/*": [
         "public/*"
       ],
+      "@types/*": [
+        "lib/types/*"
+      ],
     },
     "allowJs": true,
     "skipLibCheck": true,

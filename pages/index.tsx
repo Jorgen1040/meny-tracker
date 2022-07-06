@@ -5,6 +5,7 @@ import type { NextPageWithLayout } from "./_app";
 import Footer from "@components/Footer";
 import Navbar from "@components/Navbar";
 import { ReactElement } from "react";
+import Link from "next/link";
 
 const Home = ({
   offers,
@@ -17,10 +18,34 @@ const Home = ({
     <>
       <div>
         <h1 className="text-3xl my-3">På tilbud nå (totalt {offerCount})</h1>
-        <div className="flex w-full overflow-hidden gap-4 p-8">
+        {/* TODO: Add a "carousel" here, and stop using flex for product tiles */}
+        <div className="flex justify-center w-full overflow-hidden gap-4 p-8">
           {offers.map((offer: any, index: number) => (
             <ProductTile key={index} product={offer} />
           ))}
+        </div>
+        <div className="flex justify-center">
+          <Link href="/tilbud">
+            <a>
+              <button className="hover:cursor-pointer text-center stroke-black hover:stroke-gray-600 hover:text-gray-600 font-semibold flex flex-col items-center">
+                <span>Se alle tilbud</span>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-6 w-6 stroke-inherit"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  strokeWidth={2}
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M19 9l-7 7-7-7"
+                  />
+                </svg>
+              </button>
+            </a>
+          </Link>
         </div>
       </div>
       <div>

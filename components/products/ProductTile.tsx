@@ -1,8 +1,9 @@
+import { ProductTileData } from "@lib/types/product";
 import Image from "next/image";
 import Link from "next/link";
 import { ReactComponent as SaleIcon } from "../../public/sale_sticker.svg";
 
-export default function ProductTile({ product }: { product: any }) {
+export default function ProductTile({ product }: { product: ProductTileData }) {
   return (
     <div className="rounded-lg shadow-xl hover:shadow-2xl border border-gray-400 border-opacity-0 hover:border-opacity-20 flex flex-col transition-all">
       <div className="p-4 flex justify-center">
@@ -10,7 +11,10 @@ export default function ProductTile({ product }: { product: any }) {
           <a className="relative w-32 h-32">
             {/* Percentage sticker */}
             {/* TODO: Should this be double checked if is actually an offer?
-                Example, marked as sale (isOffer true), but price increase will show a positive percentage */}
+                Example, marked as sale (isOffer true), but price increase will show a positive percentage
+                It seems like Meny.no shows the "promotionDisplayName" regardless,
+                but if price isn't changed it's not displayed as an offer.
+            */}
             {product.isOffer && (
               <span className="fill-red-500 absolute right-0 z-10 flex rotate-12">
                 <span className="absolute left-0 right-0 text-center top-1/4 text-white">

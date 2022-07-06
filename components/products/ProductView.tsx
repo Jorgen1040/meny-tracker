@@ -1,7 +1,8 @@
+import { ProductViewData } from "@lib/types/product";
 import Image from "next/image";
 import { ReactComponent as SaleIcon } from "../../public/sale_sticker.svg";
 
-export default function ProductView({ product }: { product: any }) {
+export default function ProductView({ product }: { product: ProductViewData }) {
   // Get image, name, price, and description
   const name = product.title;
   // TODO: Add image blur

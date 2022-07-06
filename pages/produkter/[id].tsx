@@ -16,7 +16,11 @@ import {
 import Loader from "@components/Loader";
 import ProductView from "@components/products/ProductView";
 import ProductTile from "@components/products/ProductTile";
-import { ProductData } from "@lib/types/product";
+import {
+  ProductData,
+  ProductViewData,
+  ProductTileData,
+} from "@lib/types/product";
 import Head from "next/head";
 
 const logger = pino({
@@ -54,9 +58,9 @@ export default function Produkt({
   associated,
   saleRanges,
 }: {
-  product: ProductData;
+  product: ProductViewData;
   priceChanges: Change[];
-  associated: ProductData[];
+  associated: ProductTileData[];
   saleRanges: SaleRange[];
 }) {
   const router = useRouter();
@@ -198,7 +202,7 @@ export async function getStaticProps({ params }: Params) {
   const { id } = params;
   logger.info("Getting produkt with EAN: " + id);
   const client = await clientPromise;
-  // Get the first product with the provided EAN (this will be used to store all information except price in the future)
+  // Get the product with the provided EAN
   const product = await client
     .db("meny")
     .collection("products")
@@ -227,14 +231,14 @@ export async function getStaticProps({ params }: Params) {
   if (!product) return { notFound: true };
 
   // Get all associated product documents
-  const associated: any[] = [];
+  const associatedList: ProductTileData[] = [];
   // ? not all products have an associated list for some reason (newly added products?)
   if (product.associated) {
     const associated_ids = product.associated.products.slice(0, 10);
     const associatedProducts = await client
       .db("meny")
       .collection("products")
-      .find<ProductData>(
+      .find<ProductTileData>(
         { ean: { $in: associated_ids } },
         {
           projection: {
@@ -251,7 +255,7 @@ export async function getStaticProps({ params }: Params) {
         }
       )
       .toArray();
-    associated.push(...associatedProducts);
+    associatedList.push(...associatedProducts);
   }
 
   // Get all the price changes for the product
@@ -305,11 +309,14 @@ export async function getStaticProps({ params }: Params) {
   }
   // console.log(saleRanges);
 
+  // Remove associated from the final product output to the usr since it's no longer needed
+  const { associated, ...finalProduct } = product;
+
   return {
     props: {
-      product,
+      product: finalProduct as ProductViewData,
       priceChanges,
-      associated,
+      associated: associatedList,
       saleRanges,
     },
     // Revalidate after 10 minutes

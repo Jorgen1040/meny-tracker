@@ -162,10 +162,12 @@ export default function Produkt({
         <h1 className="text-2xl my-3">Lignende produkter</h1>
         {/* TODO: Find our own associated products in case they don't exist in database */}
         {associated.length > 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-5 gap-5">
-            {associated.map((product: any, index: number) => (
-              <ProductTile key={index} product={product} />
-            ))}
+          <div className="sm:flex justify-center px-8 md:px-0">
+            <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-5 gap-5 max-w-none sm:max-w-2xl lg:max-w-none">
+              {associated.map((product: any, index: number) => (
+                <ProductTile key={index} product={product} />
+              ))}
+            </div>
           </div>
         ) : (
           <h1 className="text-xl text-red-400 mb-[4.5rem]">

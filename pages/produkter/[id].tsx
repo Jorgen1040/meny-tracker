@@ -14,8 +14,6 @@ import {
   ReferenceArea,
   Label,
 } from "recharts";
-// TODO: Use alternative for moment
-import moment from "moment";
 import Loader from "@components/Loader";
 import ProductView from "@components/products/ProductView";
 import ProductTile from "@components/products/ProductTile";
@@ -31,6 +29,14 @@ const logger = pino({
     },
   },
 });
+
+function unixToDate(unix: number): string {
+  return new Date(unix).toLocaleDateString("nb-NO", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "2-digit",
+  });
+}
 
 interface Change {
   timestamp: number;
@@ -67,6 +73,7 @@ export default function Produkt({
 
   // Iterate over priceChanges and add missing values
   // If there is a change loop over the entire array again
+  // TODO: Move all this logic over to the server
   for (let i = 0; i < priceChanges.length; i++) {
     const change = priceChanges[i];
     const nextChange = priceChanges[i + 1];
@@ -93,8 +100,7 @@ export default function Produkt({
     if (
       prevChange &&
       nextChange &&
-      moment(change.timestamp).format("DD.MM.YY") ===
-        moment(nextChange.timestamp).format("DD.MM.YY")
+      unixToDate(change.timestamp) === unixToDate(nextChange.timestamp)
     ) {
       // Remove the price that didn't change
       if (
@@ -127,13 +133,17 @@ export default function Produkt({
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis
               dataKey="timestamp"
-              tickFormatter={(timeStr) => moment(timeStr).format("DD.MM.YY")}
+              tickFormatter={(timeStr) => unixToDate(timeStr)}
+              // TODO: Figure out a way to make axis dates more readable (smaller intervals)
+              // interval="preserveEnd"
+              // TODO: Maybe calculate this somehow to fit future sales?
+              // padding={{ left: 0, right: 30 }}
             />
             <YAxis dataKey="pricePerUnit" />
             <Tooltip
               separator=": "
               formatter={(value: string) => `${value.replace(".", ",")}`}
-              labelFormatter={(timeStr) => moment(timeStr).format("DD.MM.YY")}
+              labelFormatter={(timeStr) => unixToDate(timeStr)}
             />
             {/* linear or monotone? */}
             <Area

@@ -2,8 +2,12 @@ import '../styles/globals.css'
 import Layout from '@components/Layout'
 import { AppProps } from 'next/app'
 import Head from 'next/head'
-import { ReactElement, ReactNode } from "react";
+import { ReactElement, ReactNode, useEffect, useState } from "react";
 import { NextPage } from "next";
+import Router from "next/router";
+import Loader from "@components/Loader";
+import Navbar from "@components/Navbar";
+import Footer from "@components/Footer";
 
 export type NextPageWithLayout = NextPage & {
   getLayout?: (page: ReactElement) => ReactNode;
@@ -15,6 +19,19 @@ type AppPropsWithLayout = AppProps & {
 
 function MyApp({ Component, pageProps }: AppPropsWithLayout) {
   // TODO: Add SEO
+
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    Router.events.on("routeChangeStart", () => setLoading(true));
+    Router.events.on("routeChangeComplete", () => setLoading(false));
+    Router.events.on("routeChangeError", () => setLoading(false));
+    return () => {
+      Router.events.off("routeChangeStart", () => setLoading(true));
+      Router.events.off("routeChangeComplete", () => setLoading(false));
+      Router.events.off("routeChangeError", () => setLoading(false));
+    };
+  });
 
   // Get page layout, or default to normal layout
   const getLayout =
@@ -36,12 +53,22 @@ function MyApp({ Component, pageProps }: AppPropsWithLayout) {
         />
         <link rel="icon" href="/favicon-32x32.png" />
       </Head>
-      {getLayout(
+      {loading ? (
         <>
-          <main className="container mx-auto max-w-5xl">
-            <Component {...pageProps} />
-          </main>
+          <Navbar />
+          <div className="grid place-items-center mt-80">
+            <Loader show />
+          </div>
+          <Footer fixedPlacement={true} />
         </>
+      ) : (
+        getLayout(
+          <>
+            <main className="container mx-auto max-w-5xl">
+              <Component {...pageProps} />
+            </main>
+          </>
+        )
       )}
     </>
   );

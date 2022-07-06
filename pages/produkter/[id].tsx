@@ -1,6 +1,5 @@
 import { useRouter } from 'next/router';
-import clientPromise from '@lib/mongodb';
-import dynamic from 'next/dynamic';
+import clientPromise from "@lib/mongodb";
 import pino from 'pino';
 // TODO: Swap recharts with own implementation (3.js?) Maybe not?
 import {
@@ -17,8 +16,8 @@ import {
 import Loader from "@components/Loader";
 import ProductView from "@components/products/ProductView";
 import ProductTile from "@components/products/ProductTile";
+import { ProductData } from "@lib/types/product";
 import Head from "next/head";
-
 
 const logger = pino({
   transport: {
@@ -55,9 +54,9 @@ export default function Produkt({
   associated,
   saleRanges,
 }: {
-  product: any;
+  product: ProductData;
   priceChanges: Change[];
-  associated: any[];
+  associated: ProductData[];
   saleRanges: SaleRange[];
 }) {
   const router = useRouter();
@@ -203,7 +202,26 @@ export async function getStaticProps({ params }: Params) {
   const product = await client
     .db("meny")
     .collection("products")
-    .findOne({ ean: id }, { projection: { _id: 0 } });
+    .findOne<ProductData>(
+      { ean: id },
+      {
+        projection: {
+          _id: 0,
+          ean: 1,
+          title: 1,
+          subtitle: 1,
+          description: 1,
+          slugifiedUrl: 1,
+          pricePerUnit: 1,
+          pricePerUnitOriginal: 1,
+          comparePricePerUnit: 1,
+          compareUnit: 1,
+          isOffer: 1,
+          associated: 1,
+        },
+      }
+    );
+  // logger.info(product);
 
   // If no product was found, return nothing
   if (!product) return { notFound: true };
@@ -216,7 +234,22 @@ export async function getStaticProps({ params }: Params) {
     const associatedProducts = await client
       .db("meny")
       .collection("products")
-      .find({ ean: { $in: associated_ids } }, { projection: { _id: 0 } })
+      .find<ProductData>(
+        { ean: { $in: associated_ids } },
+        {
+          projection: {
+            _id: 0,
+            ean: 1,
+            title: 1,
+            subtitle: 1,
+            pricePerUnit: 1,
+            pricePerUnitOriginal: 1,
+            comparePricePerUnit: 1,
+            compareUnit: 1,
+            isOffer: 1,
+          },
+        }
+      )
       .toArray();
     associated.push(...associatedProducts);
   }

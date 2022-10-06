@@ -14,6 +14,7 @@ export default function Home({ offers }: { offers: any[] }) {
     );
   }
 
+  // TODO: Add sorting options, allergens
   return (
     <div>
       <h1 className="text-4xl font-semibold mt-12 text-center">Alle tilbud</h1>

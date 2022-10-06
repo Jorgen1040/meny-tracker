@@ -159,6 +159,7 @@ export default function Produkt({
             />
             {saleRanges.map((saleRange) => (
               // console.log(saleRange),
+              // TODO: Make sure sale area doesn't overlap price increase after sale end
               <ReferenceArea
                 key={saleRange.start}
                 x1={saleRange.start}

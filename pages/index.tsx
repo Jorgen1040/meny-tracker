@@ -17,7 +17,9 @@ const Home = ({
   return (
     <>
       <div>
-        <h1 className="text-3xl my-3">På tilbud nå (totalt {offerCount})</h1>
+        <h1 className="text-3xl my-3 font-semibold">
+          På tilbud nå (totalt {offerCount})
+        </h1>
         {/* TODO: Add a "carousel" here, and stop using flex for product tiles */}
         <div className="flex justify-center w-full overflow-hidden gap-4 p-8">
           {offers.map((offer: any, index: number) => (
@@ -49,7 +51,7 @@ const Home = ({
         </div>
       </div>
       <div>
-        <h1 className="text-3xl my-3">Nye produkter</h1>
+        <h1 className="text-3xl my-3 font-semibold">Nye produkter</h1>
         {/*
           promotionDisplayName: "Nyhet!"
           (isNew is never true)
@@ -57,7 +59,7 @@ const Home = ({
         */}
       </div>
       <div>
-        <h1 className="text-3xl my-3">Endringer</h1>
+        <h1 className="text-3xl my-3 font-semibold">Endringer</h1>
         {/*
           This would be a list of changes (think diff) with + and - symbols for products
           Use the new database to find the changes (timeseries?)

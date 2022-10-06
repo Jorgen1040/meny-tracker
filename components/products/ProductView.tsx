@@ -49,12 +49,22 @@ export default function ProductView({ product }: { product: ProductViewData }) {
             {product.compareUnit}
           </p>
         )}
-        <button
-          className="mt-8 bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
-          onClick={menyRedirect}
-        >
-          Se produktet på Meny.no
-        </button>
+        <div className="flex mt-8 items-center">
+          <button
+            className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
+            onClick={menyRedirect}
+          >
+            Se produktet på Meny.no
+          </button>
+          <a
+            className="px-4 text-red-500 hover:underline"
+            href={`mailto:meny@ringstad.dev?subject=[Meny Tracker] Prisfeil på ${product.title} (${product.ean})`}
+            target="_blank"
+            rel="noreferrer"
+          >
+            Feil pris?
+          </a>
+        </div>
       </div>
     </div>
   );

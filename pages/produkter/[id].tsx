@@ -123,6 +123,7 @@ export default function Produkt({
       <ProductView product={product} />
       <div>
         <h1 className="text-2xl my-3">Prishistorikk</h1>
+        {/* TODO: Identify graphical issue (ex. id: 7037610008532) */}
         <ResponsiveContainer width="100%" height={300}>
           <AreaChart
             data={priceChanges}

@@ -71,7 +71,7 @@ export async function getStaticProps() {
   let prices = await client
     .db("meny")
     .collection("prices")
-    .find({}, { projection: { _id: 0 } })
+    .find({}, { projection: { timestamp: 1 } })
     .sort({ timestamp: 1 })
     .toArray();
 

@@ -75,47 +75,6 @@ export default function Produkt({
     );
   }
 
-  // Iterate over priceChanges and add missing values
-  // If there is a change loop over the entire array again
-  // TODO: Move all this logic over to the server
-  for (let i = 0; i < priceChanges.length; i++) {
-    const change = priceChanges[i];
-    const nextChange = priceChanges[i + 1];
-    if (nextChange && nextChange.timestamp - change.timestamp > 86400000) {
-      priceChanges.splice(i + 1, 0, {
-        timestamp: change.timestamp + 86400000,
-        pricePerUnit: change.pricePerUnit,
-        isOffer: change.isOffer,
-        isLoweredPrice: change.isLoweredPrice,
-      });
-    }
-    // Fill in data up to current date
-    if (!nextChange && Date.now() - change.timestamp > 86400000) {
-      priceChanges.splice(i + 1, 0, {
-        timestamp: change.timestamp + 86400000,
-        pricePerUnit: change.pricePerUnit,
-        isOffer: change.isOffer,
-        isLoweredPrice: change.isLoweredPrice,
-      });
-    }
-  }
-  // Dedupe
-  // TODO: Write a check to make sure that all dates are unique and included
-  priceChanges.forEach((change, index) => {
-    const prevChange = priceChanges[index - 1];
-    const nextChange = priceChanges[index + 1];
-    if (
-      prevChange &&
-      nextChange &&
-      unixToDate(change.timestamp) === unixToDate(nextChange.timestamp)
-    ) {
-      // Remove the price that didn't change, or just remove the next price if they are the same
-      prevChange.pricePerUnit === change.pricePerUnit &&
-      nextChange.pricePerUnit !== change.pricePerUnit
-        ? priceChanges.splice(index, 1)
-        : priceChanges.splice(index + 1, 1);
-    }
-  });
   // TODO: Show important times in graph (highlight areas with sales)
   return (
     <>
@@ -161,7 +120,6 @@ export default function Produkt({
             />
             {saleRanges.map((saleRange) => (
               // console.log(saleRange),
-              // TODO: Make sure sale area doesn't overlap price increase after sale end
               <ReferenceArea
                 key={saleRange.start}
                 x1={saleRange.start}
@@ -283,15 +241,55 @@ export async function getStaticProps({ params }: Params) {
       };
     })
     .toArray();
-
-  let saleRanges: SaleRange[] = [];
-  // Go through priceChanges and find timestamps between isOffer
-  // TODO: Calculate isLoweredPrice for the items with only isOffer
+  let originalPriceChanges = [...priceChanges];
+  // Iterate over priceChanges and add missing values
+  // If there is a change loop over the entire array again
   for (let i = 0; i < priceChanges.length; i++) {
     const change = priceChanges[i];
+    const nextChange = priceChanges[i + 1];
+    if (nextChange && nextChange.timestamp - change.timestamp > 86400000) {
+      priceChanges.splice(i + 1, 0, {
+        timestamp: change.timestamp + 86400000,
+        pricePerUnit: change.pricePerUnit,
+        isOffer: change.isOffer,
+        isLoweredPrice: change.isLoweredPrice,
+      });
+    }
+    // Fill in data up to current date
+    if (!nextChange && Date.now() - change.timestamp > 86400000) {
+      priceChanges.splice(i + 1, 0, {
+        timestamp: change.timestamp + 86400000,
+        pricePerUnit: change.pricePerUnit,
+        isOffer: change.isOffer,
+        isLoweredPrice: change.isLoweredPrice,
+      });
+    }
+  }
+  // Dedupe
+  // TODO: Write a check to make sure that all dates are unique and included
+  priceChanges.forEach((change, index) => {
+    const prevChange = priceChanges[index - 1];
+    const nextChange = priceChanges[index + 1];
+    if (
+      prevChange &&
+      nextChange &&
+      unixToDate(change.timestamp) === unixToDate(nextChange.timestamp)
+    ) {
+      // Remove the price that didn't change, or just remove the next price if they are the same
+      prevChange.pricePerUnit === change.pricePerUnit &&
+      nextChange.pricePerUnit !== change.pricePerUnit
+        ? priceChanges.splice(index, 1)
+        : priceChanges.splice(index + 1, 1);
+    }
+  });
+
+  let saleRanges: SaleRange[] = [];
+  // Go through originalPriceChanges and find timestamps between isLoweredPrice
+  for (let i = 0; i < originalPriceChanges.length; i++) {
+    const change = originalPriceChanges[i];
     if (change.isOffer) {
       // Calculate if price is lowered from the previous change
-      const previousChange = priceChanges[i - 1];
+      const previousChange = originalPriceChanges[i - 1];
       if (previousChange) {
         if (change.pricePerUnit < previousChange.pricePerUnit) {
           change.isLoweredPrice = true;
@@ -299,27 +297,31 @@ export async function getStaticProps({ params }: Params) {
       }
     }
     if (change.isLoweredPrice) {
-      // Only display sale if after fixing database script
-      if (change.timestamp > 1654394419000) {
-        for (let j = i; j < priceChanges.length; j++) {
-          const nextChange = priceChanges[j];
-          if (!nextChange.isLoweredPrice) {
-            saleRanges.push({
-              start: change.timestamp,
-              end: nextChange.timestamp,
-            });
-            i = j;
-            break;
-          }
-          if (j === priceChanges.length - 1) {
-            // TODO: Display future sale end date (if included in product.promotions[n].to)
-            // ? Can be checked by finding item in promotions that's promotions[n].isMarketed
-            // ? Might have to set up a blacklist of certain promotion IDs that don't affect price (ex. Jacobs utvalgte)
-            // ? Add a dotted line up until end of sale (expected price)
-            saleRanges.push({
-              start: change.timestamp,
-            });
-          }
+      for (let j = i; j < originalPriceChanges.length; j++) {
+        const nextChange = originalPriceChanges[j];
+        // Check for sale end
+        if (!nextChange.isLoweredPrice) {
+          // Find the index of the last timestamp before sale end
+          let saleEndIndex =
+            priceChanges.findIndex(
+              (e) => e.timestamp === nextChange.timestamp
+            ) - 1;
+          saleRanges.push({
+            start: change.timestamp,
+            end: priceChanges[saleEndIndex].timestamp,
+          });
+          i = j;
+          break;
+        }
+        // If this is the last change, leave end undefined
+        if (j === originalPriceChanges.length - 1) {
+          // TODO: Display future sale end date (if included in product.promotions[n].to)
+          // ? Can be checked by finding item in promotions that's promotions[n].isMarketed
+          // ? Might have to set up a blacklist of certain promotion IDs that don't affect price (ex. Jacobs utvalgte)
+          // ? Add a dotted line up until end of sale (expected price)
+          saleRanges.push({
+            start: change.timestamp,
+          });
         }
       }
     }

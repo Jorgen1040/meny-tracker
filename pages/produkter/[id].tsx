@@ -100,6 +100,7 @@ export default function Produkt({
     }
   }
   // Dedupe
+  // TODO: Write a check to make sure that all dates are unique and included
   priceChanges.forEach((change, index) => {
     const prevChange = priceChanges[index - 1];
     const nextChange = priceChanges[index + 1];
@@ -108,13 +109,11 @@ export default function Produkt({
       nextChange &&
       unixToDate(change.timestamp) === unixToDate(nextChange.timestamp)
     ) {
-      // Remove the price that didn't change
-      if (
-        prevChange.pricePerUnit === change.pricePerUnit &&
-        nextChange.pricePerUnit !== change.pricePerUnit
-      ) {
-        priceChanges.splice(index, 1);
-      }
+      // Remove the price that didn't change, or just remove the next price if they are the same
+      prevChange.pricePerUnit === change.pricePerUnit &&
+      nextChange.pricePerUnit !== change.pricePerUnit
+        ? priceChanges.splice(index, 1)
+        : priceChanges.splice(index + 1, 1);
     }
   });
   // TODO: Show important times in graph (highlight areas with sales)

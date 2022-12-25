@@ -45,6 +45,7 @@ interface Change {
   timestamp: number;
   pricePerUnit: number;
   isOffer: boolean;
+  isLoweredPrice: boolean;
 }
 
 interface SaleRange {
@@ -85,6 +86,7 @@ export default function Produkt({
         timestamp: change.timestamp + 86400000,
         pricePerUnit: change.pricePerUnit,
         isOffer: change.isOffer,
+        isLoweredPrice: change.isLoweredPrice,
       });
     }
     // Fill in data up to current date
@@ -93,6 +95,7 @@ export default function Produkt({
         timestamp: change.timestamp + 86400000,
         pricePerUnit: change.pricePerUnit,
         isOffer: change.isOffer,
+        isLoweredPrice: change.isLoweredPrice,
       });
     }
   }
@@ -223,6 +226,7 @@ export async function getStaticProps({ params }: Params) {
           comparePricePerUnit: 1,
           compareUnit: 1,
           isOffer: 1,
+          isLoweredPrice: 1,
           associated: 1,
         },
       }
@@ -253,6 +257,7 @@ export async function getStaticProps({ params }: Params) {
             comparePricePerUnit: 1,
             compareUnit: 1,
             isOffer: 1,
+            isLoweredPrice: 1,
           },
         }
       )
@@ -275,20 +280,31 @@ export async function getStaticProps({ params }: Params) {
         timestamp: item.timestamp.getTime(),
         pricePerUnit: item.pricePerUnit.toFixed(2),
         isOffer: item.isOffer?.toString() === "true",
+        isLoweredPrice: item.isLoweredPrice?.toString() === "true",
       };
     })
     .toArray();
 
   let saleRanges: SaleRange[] = [];
   // Go through priceChanges and find timestamps between isOffer
+  // TODO: Calculate isLoweredPrice for the items with only isOffer
   for (let i = 0; i < priceChanges.length; i++) {
     const change = priceChanges[i];
     if (change.isOffer) {
+      // Calculate if price is lowered from the previous change
+      const previousChange = priceChanges[i - 1];
+      if (previousChange) {
+        if (change.pricePerUnit < previousChange.pricePerUnit) {
+          change.isLoweredPrice = true;
+        }
+      }
+    }
+    if (change.isLoweredPrice) {
       // Only display sale if after fixing database script
       if (change.timestamp > 1654394419000) {
         for (let j = i; j < priceChanges.length; j++) {
           const nextChange = priceChanges[j];
-          if (!nextChange.isOffer) {
+          if (!nextChange.isLoweredPrice) {
             saleRanges.push({
               start: change.timestamp,
               end: nextChange.timestamp,

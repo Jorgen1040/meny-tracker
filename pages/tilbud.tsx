@@ -33,7 +33,7 @@ export async function getStaticProps() {
     .db("meny")
     .collection("products")
     .find(
-      { isOffer: true },
+      { isLoweredPrice: true },
       {
         projection: {
           _id: 0,
@@ -45,10 +45,10 @@ export async function getStaticProps() {
           comparePricePerUnit: 1,
           compareUnit: 1,
           isOffer: 1,
+          isLoweredPrice: 1,
         },
       }
     )
-    // .sort({ timestamp: 1 })
     .toArray();
 
   return {

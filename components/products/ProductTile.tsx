@@ -10,12 +10,8 @@ export default function ProductTile({ product }: { product: ProductTileData }) {
         <Link href={`/produkter/${product.ean}`} prefetch={false}>
           <a className="relative w-32 h-32">
             {/* Percentage sticker */}
-            {/* TODO: Should this be double checked if is actually an offer?
-                Example, marked as sale (isOffer true), but price increase will show a positive percentage
-                It seems like Meny.no shows the "promotionDisplayName" regardless,
-                but if price isn't changed it's not displayed as an offer.
-            */}
-            {product.isOffer && (
+            {/* TODO: Show the "promotionDisplayName" as well */}
+            {product.isLoweredPrice && (
               <span className="fill-red-500 absolute right-0 z-10 flex rotate-12">
                 <span className="absolute left-0 right-0 text-center top-1/4 text-white">
                   {(
@@ -49,7 +45,7 @@ export default function ProductTile({ product }: { product: ProductTileData }) {
         <p className="text-sm">{product.subtitle}</p>
       </div>
       <div className="relative p-2">
-        {product.isOffer && (
+        {product.isLoweredPrice && (
           <p className="absolute -top-2 text-gray-400">
             <s>
               kr {product.pricePerUnitOriginal.toFixed(2).replace(".", ",")}

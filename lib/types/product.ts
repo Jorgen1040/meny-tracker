@@ -9,6 +9,7 @@ export interface ProductData {
   comparePricePerUnit?: number;
   compareUnit: string;
   isOffer: boolean;
+  isLoweredPrice: boolean;
   associated: {
     products: string[];
   };

@@ -81,22 +81,40 @@ Home.getLayout = function getLayout(page: ReactElement) {
 
 export async function getStaticProps() {
   const client = await clientPromise;
+  // Use aggregation to get a random sample of 5 products
   const offersCursor = await client
     .db("meny")
     .collection("products")
-    .find({ isOffer: true }, { projection: { _id: 0 } })
-    .limit(5)
+    .aggregate([
+      {
+        $match: {
+          isLoweredPrice: true,
+        },
+      },
+      {
+        $sample: {
+          size: 5,
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+        },
+      },
+    ])
     .toArray();
 
   let offers = offersCursor.map((offer: any) => {
     return offer;
   });
 
+  // It's faster to do two queries than to count the array and then slice it /shrug
   const offerCount = await client
     .db("meny")
     .collection("products")
-    .find({ isOffer: true })
+    .find({ isLoweredPrice: true })
     .count();
+
   offers = randomizeArray(offers);
 
   return {

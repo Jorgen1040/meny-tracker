@@ -14,7 +14,7 @@ export default function ProductView({ product }: { product: ProductViewData }) {
   return (
     <div className="flex my-8">
       <div className="sm:mr-24 mr-2 relative w-64 h-64">
-        {product.isOffer && (
+        {product.isLoweredPrice && (
           <span className="fill-red-500 absolute right-0 z-10 flex rotate-12">
             <span className="absolute left-0 right-0 text-center top-1/4 text-white">
               {(
@@ -33,7 +33,8 @@ export default function ProductView({ product }: { product: ProductViewData }) {
         <h1 className="text-3xl">{name}</h1>
         <p>{product.subtitle}</p>
         <p className="mb-12 max-w-2xl">{product.description}</p>
-        {product.isOffer && (
+        {/* TODO: Show promotionDisplayName */}
+        {product.isLoweredPrice && (
           <p className="text-gray-400">
             <s>
               kr {product.pricePerUnitOriginal.toFixed(2).replace(".", ",")}

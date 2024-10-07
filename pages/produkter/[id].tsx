@@ -319,19 +319,16 @@ export async function getStaticProps({ params }: Params) {
             priceChanges.findIndex(
               (e) => e.timestamp === nextChange.timestamp
             ) - 1;
-
-          let endTimestamp;
-          if (!priceChanges[saleEndIndex]) {
-            saleRanges.push({
-              start: change.timestamp,
-            });
-          } else {
+          try {
             saleRanges.push({
               start: change.timestamp,
               end: priceChanges[saleEndIndex].timestamp,
             });
+          } catch (error) {
+            saleRanges.push({
+              start: change.timestamp,
+            });
           }
-
           i = j;
           break;
         }
@@ -347,6 +344,10 @@ export async function getStaticProps({ params }: Params) {
         }
       }
     }
+  }
+  // The first saleRange should not have no end, so just delete it (this is an issue due to database changes)
+  if (saleRanges.length > 1) {
+    if (saleRanges[0].end === undefined) saleRanges.shift();
   }
   // console.log(saleRanges);
 

@@ -90,6 +90,7 @@ export async function getStaticProps() {
       timeList,
     },
     // Revalidate after 10 minutes
-    revalidate: 600,
+    // Removed in preparation to "archive" the site
+    // revalidate: 600,
   };
 }

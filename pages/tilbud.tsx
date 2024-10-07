@@ -50,8 +50,6 @@ export async function getStaticProps() {
       }
     )
     // TODO: Add a load more button
-    // Limit to 50 to stop the page from being too big
-    .limit(50)
     .toArray();
 
   return {

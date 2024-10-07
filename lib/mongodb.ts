@@ -18,7 +18,7 @@ if (!process.env.MONGODB_URI) {
 
 if (process.env.NODE_ENV === "development") {
     // If in develompent environment, add database connection to globals to be accessible after hot reloads
-    let mongoGlobal = global as typeof globalThis & { 
+    let mongoGlobal = global as typeof globalThis & {
         _mongoClientPromise: Promise<MongoClient>
     };
     if (!mongoGlobal._mongoClientPromise) {

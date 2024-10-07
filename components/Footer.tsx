@@ -47,7 +47,7 @@ export default function Footer({
             <a
               href="https://github.com/Jorgen1040/meny-tracker"
               target="_blank"
-              rel="noreferrer"
+              rel="author"
             >
               Se kildekode på GitHub
             </a>

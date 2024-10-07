@@ -49,6 +49,29 @@ const Home = ({
             </a>
           </Link>
         </div>
+        <div className="flex justify-center my-6">
+          <Link href="/alle-produkter">
+            <a>
+              <button className="hover:cursor-pointer text-center stroke-black hover:stroke-gray-600 hover:text-gray-600 font-semibold flex flex-col items-center">
+                <span>Se alle produkter</span>
+                {/* <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-6 w-6 stroke-inherit"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  strokeWidth={2}
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M19 9l-7 7-7-7"
+                  />
+                </svg> */}
+              </button>
+            </a>
+          </Link>
+        </div>
       </div>
       <div>
         <h1 className="text-3xl my-3 font-semibold">Nye produkter</h1>
@@ -123,7 +146,8 @@ export async function getStaticProps() {
       offerCount,
     },
     // Revalidate after 10 minutes
-    revalidate: 600,
+    // Removed in preparation to "archive" the site
+    // revalidate: 600,
   };
 }
 

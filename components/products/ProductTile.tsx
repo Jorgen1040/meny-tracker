@@ -32,6 +32,7 @@ export default function ProductTile({ product }: { product: ProductTileData }) {
               alt={product.title}
               layout="fill"
               objectFit="contain"
+              unoptimized={true}
             />
           </a>
         </Link>

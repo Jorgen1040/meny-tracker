@@ -27,7 +27,13 @@ export default function ProductView({ product }: { product: ProductViewData }) {
             <SaleIcon width={48} height={48} />
           </span>
         )}
-        <Image src={image} alt={name} layout="fill" objectFit="contain" />
+        <Image
+          src={image}
+          alt={name}
+          layout="fill"
+          objectFit="contain"
+          unoptimized={true}
+        />
       </div>
       <div>
         <h1 className="text-3xl">{name}</h1>

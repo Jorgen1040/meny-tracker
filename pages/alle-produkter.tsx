@@ -17,7 +17,9 @@ export default function Home({ offers }: { offers: any[] }) {
   // TODO: Add sorting options, allergens
   return (
     <div>
-      <h1 className="text-4xl font-semibold mt-12 text-center">Alle tilbud</h1>
+      <h1 className="text-4xl font-semibold mt-12 text-center">
+        Alle produkter ({offers.length})
+      </h1>
       <div className="grid grid-cols-5 gap-4 p-8">
         {offers.map((offer: any, index: number) => (
           <ProductTile key={index} product={offer} />
@@ -33,7 +35,7 @@ export async function getStaticProps() {
     .db("meny")
     .collection("products")
     .find(
-      { isLoweredPrice: true },
+      {},
       {
         projection: {
           _id: 0,
@@ -49,9 +51,6 @@ export async function getStaticProps() {
         },
       }
     )
-    // TODO: Add a load more button
-    // Limit to 50 to stop the page from being too big
-    .limit(50)
     .toArray();
 
   return {

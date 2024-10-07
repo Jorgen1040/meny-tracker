@@ -102,7 +102,7 @@ export default function Produkt({
               // TODO: Figure out a way to make axis dates more readable (smaller intervals)
               // interval="preserveEnd"
               // TODO: Maybe calculate this somehow to fit future sales?
-              // padding={{ left: 0, right: 30 }}
+              padding={{ left: 0, right: 20 }}
             />
             <YAxis dataKey="pricePerUnit" />
             <Tooltip
@@ -118,6 +118,19 @@ export default function Produkt({
               name="Pris"
               unit=" kr"
             />
+            {/* This ReferenceArea doesn't work, but i'll leave it here anyways ¯\_(ツ)_/¯ */}
+            <ReferenceArea
+              key="1708725600000"
+              x1="1708725600000"
+              x2={Date.now()}
+              fill="red"
+              fillOpacity={0.4}
+              ifOverflow="extendDomain"
+              isFront={true}
+            >
+              <Label value="Utdatert" position="center"></Label>
+            </ReferenceArea>
+
             {saleRanges.map((saleRange) => (
               // console.log(saleRange),
               <ReferenceArea
@@ -255,8 +268,8 @@ export async function getStaticProps({ params }: Params) {
         isLoweredPrice: change.isLoweredPrice,
       });
     }
-    // Fill in data up to current date
-    if (!nextChange && Date.now() - change.timestamp > 86400000) {
+    // Fill in data up to last date with data (23. feb 2024)
+    if (!nextChange && 1708725600000 - change.timestamp > 86400000) {
       priceChanges.splice(i + 1, 0, {
         timestamp: change.timestamp + 86400000,
         pricePerUnit: change.pricePerUnit,
@@ -306,10 +319,19 @@ export async function getStaticProps({ params }: Params) {
             priceChanges.findIndex(
               (e) => e.timestamp === nextChange.timestamp
             ) - 1;
-          saleRanges.push({
-            start: change.timestamp,
-            end: priceChanges[saleEndIndex].timestamp,
-          });
+
+          let endTimestamp;
+          if (!priceChanges[saleEndIndex]) {
+            saleRanges.push({
+              start: change.timestamp,
+            });
+          } else {
+            saleRanges.push({
+              start: change.timestamp,
+              end: priceChanges[saleEndIndex].timestamp,
+            });
+          }
+
           i = j;
           break;
         }
@@ -339,7 +361,8 @@ export async function getStaticProps({ params }: Params) {
       saleRanges,
     },
     // Revalidate after 10 minutes
-    revalidate: 600,
+    // Removed in preparation to "archive" the site
+    // revalidate: 600,
   };
 }
 
